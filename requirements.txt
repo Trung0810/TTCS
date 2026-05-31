@@ -1,0 +1,29 @@
+# Core FastAPI Framework
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
+pydantic==2.4.2
+pydantic-settings==2.0.3
+
+# Deep Learning & Computer Vision
+torch==2.1.0
+torchvision==0.16.0
+opencv-python==4.9.0.80
+numpy==1.26.4              
+Pillow==10.0.1
+
+# YOLO Object Detection (hỗ trợ C3k2, tương thích YOLOv11)
+ultralytics==8.3.0
+
+# Utilities
+python-multipart==0.0.6
+python-dotenv==1.0.0
+aiofiles==23.2.1
+
+# Production Deployment (optional)
+gunicorn==21.2.0
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+
+# Monitoring & Logging (optional)
+structlog==23.1.0
+prometheus-client==0.17.1

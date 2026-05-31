@@ -1,0 +1,146 @@
+2026-05-31 16:14:45,965 - __main__ - INFO - LPR Backend API Shutting Down...
+2026-05-31 16:14:58,223 - __main__ - INFO - Using device: cuda
+2026-05-31 16:15:00,361 - __main__ - ERROR - Unexpected error loading YOLO model: ERROR  D:\PYTHON\WEBTTCS\yolov11_detection.pt requires numpy>=1.26.1, however numpy==1.24.3 is installed.
+Traceback (most recent call last):
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\ultralytics\nn\tasks.py", line 1544, in torch_safe_load
+    ckpt = _load()
+           ^^^^^^^
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\ultralytics\nn\tasks.py", line 1541, in _load
+    return torch_load(file, map_location="cpu")
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\ultralytics\utils\patches.py", line 181, in torch_load
+    return torch.load(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\serialization.py", line 1360, in load
+    return _load(
+           ^^^^^^
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\serialization.py", line 1848, in _load
+    result = unpickler.load()
+             ^^^^^^^^^^^^^^^^
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\torch\serialization.py", line 1837, in find_class
+    return super().find_class(mod_name, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ModuleNotFoundError: No module named 'numpy._core'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "D:\PYTHON\WEBTTCS\app.py", line 460, in initialize_models
+    self.yolo_model = YOLO(str(yolo_path))
+                      ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\ultralytics\models\yolo\model.py", line 78, in __init__
+    super().__init__(model=model, task=task, verbose=verbose)
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\ultralytics\engine\model.py", line 144, in __init__
+    self._load(model, task=task)
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\ultralytics\engine\model.py", line 283, in _load
+    self.model, self.ckpt = load_checkpoint(weights)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\ultralytics\nn\tasks.py", line 1615, in load_checkpoint
+    ckpt, weight = torch_safe_load(weight)  # load ckpt
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Trung\AppData\Local\Programs\Python\Python311\Lib\site-packages\ultralytics\nn\tasks.py", line 1567, in torch_safe_load
+    raise ModuleNotFoundError(
+ModuleNotFoundError: ERROR  D:\PYTHON\WEBTTCS\yolov11_detection.pt requires numpy>=1.26.1, however numpy==1.24.3 is installed.
+2026-05-31 16:15:00,817 - __main__ - INFO - ✓ CRNN model loaded successfully
+2026-05-31 16:15:00,857 - __main__ - INFO - ================================================================================
+2026-05-31 16:15:00,858 - __main__ - INFO - LPR Backend API Starting Up...
+2026-05-31 16:15:00,858 - __main__ - INFO - ================================================================================
+2026-05-31 16:15:00,858 - __main__ - INFO - Device: cuda
+2026-05-31 16:15:00,858 - __main__ - INFO - YOLO Model: ✗ Not Found
+2026-05-31 16:15:00,858 - __main__ - INFO - CRNN Model: ✓ Loaded
+2026-05-31 16:15:00,858 - __main__ - INFO - ================================================================================
+2026-05-31 16:16:17,600 - __main__ - INFO - LPR Backend API Shutting Down...
+2026-05-31 16:17:36,504 - __main__ - INFO - Using device: cuda
+2026-05-31 16:17:38,536 - __main__ - INFO - YOLO model loaded successfully
+2026-05-31 16:17:38,966 - __main__ - INFO - ✓ CRNN model loaded successfully
+2026-05-31 16:17:39,033 - __main__ - INFO - ================================================================================
+2026-05-31 16:17:39,034 - __main__ - INFO - LPR Backend API Starting Up...
+2026-05-31 16:17:39,034 - __main__ - INFO - ================================================================================
+2026-05-31 16:17:39,034 - __main__ - INFO - Device: cuda
+2026-05-31 16:17:39,035 - __main__ - INFO - YOLO Model: ✓ Loaded
+2026-05-31 16:17:39,035 - __main__ - INFO - CRNN Model: ✓ Loaded
+2026-05-31 16:17:39,035 - __main__ - INFO - ================================================================================
+2026-05-31 16:36:58,380 - __main__ - INFO - Using device: cpu
+2026-05-31 16:37:29,174 - __main__ - INFO - Using device: cpu
+2026-05-31 16:37:30,061 - __main__ - ERROR - Failed to load YOLO model crnn_recognition.pt: 'model'
+2026-05-31 16:37:30,066 - __main__ - ERROR - Failed to load YOLO model yolov11_detection.pt: Can't get attribute 'C3k2' on <module 'ultralytics.nn.modules.block' from 'D:\\PYTHON\\WEBTTCS\\.venv\\Lib\\site-packages\\ultralytics\\nn\\modules\\block.py'>
+2026-05-31 16:37:30,066 - __main__ - ERROR - No YOLO model could be loaded
+2026-05-31 16:37:30,066 - __main__ - ERROR - Error initializing CRNN: No module named 'models'
+Traceback (most recent call last):
+  File "D:\PYTHON\WEBTTCS\app.py", line 508, in initialize_models
+    from models.crnn import CRNN
+ModuleNotFoundError: No module named 'models'
+2026-05-31 16:40:58,928 - __main__ - INFO - Using device: cpu
+2026-05-31 16:40:59,791 - __main__ - ERROR - YOLO model load failed (possible ultralytics version mismatch): Can't get attribute 'C3k2' on <module 'ultralytics.nn.modules.block' from 'D:\\PYTHON\\WEBTTCS\\.venv\\Lib\\site-packages\\ultralytics\\nn\\modules\\block.py'>
+Traceback (most recent call last):
+  File "D:\PYTHON\WEBTTCS\app.py", line 460, in initialize_models
+    self.yolo_model = YOLO(str(yolo_path))
+                      ^^^^^^^^^^^^^^^^^^^^
+  File "D:\PYTHON\WEBTTCS\.venv\Lib\site-packages\ultralytics\engine\model.py", line 97, in __init__
+    self._load(model, task)
+  File "D:\PYTHON\WEBTTCS\.venv\Lib\site-packages\ultralytics\engine\model.py", line 149, in _load
+    self.model, self.ckpt = attempt_load_one_weight(weights)
+                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PYTHON\WEBTTCS\.venv\Lib\site-packages\ultralytics\nn\tasks.py", line 628, in attempt_load_one_weight
+    ckpt, weight = torch_safe_load(weight)  # load ckpt
+                   ^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PYTHON\WEBTTCS\.venv\Lib\site-packages\ultralytics\nn\tasks.py", line 567, in torch_safe_load
+    return torch.load(file, map_location='cpu'), file  # load
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PYTHON\WEBTTCS\.venv\Lib\site-packages\torch\serialization.py", line 1014, in load
+    return _load(opened_zipfile,
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "D:\PYTHON\WEBTTCS\.venv\Lib\site-packages\torch\serialization.py", line 1422, in _load
+    result = unpickler.load()
+             ^^^^^^^^^^^^^^^^
+  File "D:\PYTHON\WEBTTCS\.venv\Lib\site-packages\torch\serialization.py", line 1415, in find_class
+    return super().find_class(mod_name, name)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AttributeError: Can't get attribute 'C3k2' on <module 'ultralytics.nn.modules.block' from 'D:\\PYTHON\\WEBTTCS\\.venv\\Lib\\site-packages\\ultralytics\\nn\\modules\\block.py'>
+2026-05-31 16:40:59,792 - __main__ - ERROR - The YOLO weights appear to be incompatible with the installed ultralytics package.
+Possible fixes:
+  1) Install a compatible ultralytics version, e.g.: pip install ultralytics==8.0.200
+  2) Re-download the model weights that match your ultralytics version.
+  3) If you built the weights yourself, re-export them using your current ultralytics release.
+2026-05-31 16:41:00,097 - __main__ - INFO - ✓ CRNN model loaded successfully
+2026-05-31 16:41:00,135 - __main__ - INFO - ================================================================================
+2026-05-31 16:41:00,135 - __main__ - INFO - LPR Backend API Starting Up...
+2026-05-31 16:41:00,135 - __main__ - INFO - ================================================================================
+2026-05-31 16:41:00,135 - __main__ - INFO - Device: cpu
+2026-05-31 16:41:00,135 - __main__ - INFO - YOLO Model: ✗ Not Found
+2026-05-31 16:41:00,136 - __main__ - INFO - CRNN Model: ✓ Loaded
+2026-05-31 16:41:00,136 - __main__ - INFO - ================================================================================
+2026-05-31 16:42:11,506 - __main__ - INFO - LPR Backend API Shutting Down...
+2026-05-31 16:43:24,519 - __main__ - INFO - Using device: cpu
+2026-05-31 16:43:25,348 - __main__ - INFO - YOLO model loaded successfully
+2026-05-31 16:43:25,628 - __main__ - INFO - ✓ CRNN model loaded successfully
+2026-05-31 16:43:25,652 - __main__ - INFO - ================================================================================
+2026-05-31 16:43:25,652 - __main__ - INFO - LPR Backend API Starting Up...
+2026-05-31 16:43:25,652 - __main__ - INFO - ================================================================================
+2026-05-31 16:43:25,652 - __main__ - INFO - Device: cpu
+2026-05-31 16:43:25,652 - __main__ - INFO - YOLO Model: ✓ Loaded
+2026-05-31 16:43:25,652 - __main__ - INFO - CRNN Model: ✓ Loaded
+2026-05-31 16:43:25,653 - __main__ - INFO - ================================================================================
+2026-05-31 16:45:28,853 - __main__ - INFO - LPR Backend API Shutting Down...
+2026-05-31 16:47:01,322 - __main__ - INFO - Using device: cuda
+2026-05-31 16:47:03,052 - __main__ - INFO - YOLO model loaded successfully
+2026-05-31 16:47:03,564 - __main__ - INFO - ✓ CRNN model loaded successfully
+2026-05-31 16:47:03,634 - __main__ - INFO - ================================================================================
+2026-05-31 16:47:03,634 - __main__ - INFO - LPR Backend API Starting Up...
+2026-05-31 16:47:03,635 - __main__ - INFO - ================================================================================
+2026-05-31 16:47:03,635 - __main__ - INFO - Device: cuda
+2026-05-31 16:47:03,635 - __main__ - INFO - YOLO Model: ✓ Loaded
+2026-05-31 16:47:03,635 - __main__ - INFO - CRNN Model: ✓ Loaded
+2026-05-31 16:47:03,636 - __main__ - INFO - ================================================================================
+2026-05-31 16:58:57,986 - __main__ - INFO - LPR Backend API Shutting Down...
+2026-05-31 16:59:05,211 - __main__ - INFO - Using device: cuda
+2026-05-31 16:59:07,247 - __main__ - INFO - ✓ YOLO model loaded successfully
+2026-05-31 16:59:07,910 - __main__ - INFO - ✓ CRNN model loaded successfully
+2026-05-31 16:59:07,977 - __main__ - INFO - ================================================================================
+2026-05-31 16:59:07,977 - __main__ - INFO - LPR Backend API Starting Up...
+2026-05-31 16:59:07,978 - __main__ - INFO - ================================================================================
+2026-05-31 16:59:07,978 - __main__ - INFO - Device: cuda
+2026-05-31 16:59:07,978 - __main__ - INFO - YOLO Model: ✓ Loaded
+2026-05-31 16:59:07,979 - __main__ - INFO - CRNN Model: ✓ Loaded
+2026-05-31 16:59:07,979 - __main__ - INFO - Multi-plate detection: ENABLED
+2026-05-31 16:59:07,979 - __main__ - INFO - ================================================================================

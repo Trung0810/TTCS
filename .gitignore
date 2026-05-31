@@ -1,0 +1,5 @@
+/node_modules
+/.history
+/.venv
+/crnn_recognition.pt
+/yolov11_detection.pt
