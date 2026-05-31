@@ -1,0 +1,516 @@
+[
+  {
+    "timestamp": "2026-05-31T21:02:43.421847",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "11L220680",
+        "confidence": 98.11,
+        "detection_confidence": 65.48,
+        "bbox": {
+          "x": 310,
+          "y": 305,
+          "width": 189,
+          "height": 189
+        },
+        "timestamp": "2026-05-31T21:02:43.421847"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:02:44.593045",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "99H77060",
+        "confidence": 99.92,
+        "detection_confidence": 87.86,
+        "bbox": {
+          "x": 146,
+          "y": 159,
+          "width": 276,
+          "height": 191
+        },
+        "timestamp": "2026-05-31T21:02:44.593045"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:02:45.800461",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "99H77060",
+        "confidence": 99.34,
+        "detection_confidence": 85.48,
+        "bbox": {
+          "x": 65,
+          "y": 210,
+          "width": 292,
+          "height": 197
+        },
+        "timestamp": "2026-05-31T21:02:45.800461"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:03:01.408620",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "72B16888",
+        "confidence": 99.97,
+        "detection_confidence": 86.59,
+        "bbox": {
+          "x": 0,
+          "y": 234,
+          "width": 275,
+          "height": 235
+        },
+        "timestamp": "2026-05-31T21:03:01.408620"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:03:02.613523",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "12B116888",
+        "confidence": 99.63,
+        "detection_confidence": 87.97,
+        "bbox": {
+          "x": 12,
+          "y": 189,
+          "width": 338,
+          "height": 236
+        },
+        "timestamp": "2026-05-31T21:03:02.613523"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:03:03.810404",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "72B116888",
+        "confidence": 99.36,
+        "detection_confidence": 86.22,
+        "bbox": {
+          "x": 25,
+          "y": 184,
+          "width": 339,
+          "height": 235
+        },
+        "timestamp": "2026-05-31T21:03:03.810404"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:03:05.003291",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "12B116888",
+        "confidence": 99.14,
+        "detection_confidence": 86.99,
+        "bbox": {
+          "x": 32,
+          "y": 181,
+          "width": 335,
+          "height": 237
+        },
+        "timestamp": "2026-05-31T21:03:05.003291"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:03:13.400637",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "51T32000",
+        "confidence": 99.97,
+        "detection_confidence": 85.88,
+        "bbox": {
+          "x": 98,
+          "y": 229,
+          "width": 265,
+          "height": 202
+        },
+        "timestamp": "2026-05-31T21:03:13.400637"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:03:14.601606",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "11T30000",
+        "confidence": 99.27,
+        "detection_confidence": 85.24,
+        "bbox": {
+          "x": 0,
+          "y": 246,
+          "width": 197,
+          "height": 192
+        },
+        "timestamp": "2026-05-31T21:03:14.601606"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:03:15.810772",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "51T32000",
+        "confidence": 99.96,
+        "detection_confidence": 86.09,
+        "bbox": {
+          "x": 53,
+          "y": 238,
+          "width": 264,
+          "height": 203
+        },
+        "timestamp": "2026-05-31T21:03:15.810772"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:03:32.609765",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "59V179379",
+        "confidence": 100.0,
+        "detection_confidence": 77.85,
+        "bbox": {
+          "x": 26,
+          "y": 340,
+          "width": 262,
+          "height": 176
+        },
+        "timestamp": "2026-05-31T21:03:32.609765"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:03:33.791735",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "59V19379",
+        "confidence": 99.79,
+        "detection_confidence": 72.4,
+        "bbox": {
+          "x": 0,
+          "y": 262,
+          "width": 251,
+          "height": 233
+        },
+        "timestamp": "2026-05-31T21:03:33.791735"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:06:41.211781",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "51T32000",
+        "confidence": 99.9,
+        "detection_confidence": 83.49,
+        "bbox": {
+          "x": 52,
+          "y": 241,
+          "width": 251,
+          "height": 178
+        },
+        "timestamp": "2026-05-31T21:06:41.211781"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:06:47.211378",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "72B116888",
+        "confidence": 99.13,
+        "detection_confidence": 84.61,
+        "bbox": {
+          "x": 17,
+          "y": 239,
+          "width": 289,
+          "height": 198
+        },
+        "timestamp": "2026-05-31T21:06:47.211378"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:06:53.216994",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "72B116888",
+        "confidence": 99.89,
+        "detection_confidence": 86.97,
+        "bbox": {
+          "x": 36,
+          "y": 136,
+          "width": 292,
+          "height": 204
+        },
+        "timestamp": "2026-05-31T21:06:53.216994"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:07:02.219137",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "54L79999",
+        "confidence": 99.97,
+        "detection_confidence": 82.77,
+        "bbox": {
+          "x": 25,
+          "y": 277,
+          "width": 176,
+          "height": 108
+        },
+        "timestamp": "2026-05-31T21:07:02.219137"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:07:11.218309",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "29Y303658",
+        "confidence": 99.55,
+        "detection_confidence": 86.54,
+        "bbox": {
+          "x": 75,
+          "y": 137,
+          "width": 290,
+          "height": 216
+        },
+        "timestamp": "2026-05-31T21:07:11.218309"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:07:20.211630",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "29C199999",
+        "confidence": 99.32,
+        "detection_confidence": 83.19,
+        "bbox": {
+          "x": 551,
+          "y": 286,
+          "width": 171,
+          "height": 111
+        },
+        "timestamp": "2026-05-31T21:07:20.211630"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:07:26.211515",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "29G133333",
+        "confidence": 100.0,
+        "detection_confidence": 83.34,
+        "bbox": {
+          "x": 628,
+          "y": 356,
+          "width": 107,
+          "height": 83
+        },
+        "timestamp": "2026-05-31T21:07:26.211515"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:07:35.211553",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "99H77060",
+        "confidence": 99.74,
+        "detection_confidence": 84.41,
+        "bbox": {
+          "x": 565,
+          "y": 186,
+          "width": 263,
+          "height": 194
+        },
+        "timestamp": "2026-05-31T21:07:35.211553"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:07:47.219699",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "14LA99909909",
+        "confidence": 98.68,
+        "detection_confidence": 79.73,
+        "bbox": {
+          "x": 628,
+          "y": 306,
+          "width": 250,
+          "height": 96
+        },
+        "timestamp": "2026-05-31T21:07:47.219699"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:08:50.203951",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "99H77060",
+        "confidence": 99.46,
+        "detection_confidence": 86.51,
+        "bbox": {
+          "x": 115,
+          "y": 294,
+          "width": 250,
+          "height": 151
+        },
+        "timestamp": "2026-05-31T21:08:50.203951"
+      },
+      {
+        "id": 2,
+        "plate": "29C199999",
+        "confidence": 100.0,
+        "detection_confidence": 78.81,
+        "bbox": {
+          "x": 550,
+          "y": 261,
+          "width": 184,
+          "height": 102
+        },
+        "timestamp": "2026-05-31T21:08:50.203951"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:09:08.213458",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "98K102897",
+        "confidence": 99.61,
+        "detection_confidence": 85.51,
+        "bbox": {
+          "x": 252,
+          "y": 295,
+          "width": 149,
+          "height": 102
+        },
+        "timestamp": "2026-05-31T21:09:08.213458"
+      },
+      {
+        "id": 2,
+        "plate": "29Y303658",
+        "confidence": 99.98,
+        "detection_confidence": 82.42,
+        "bbox": {
+          "x": 585,
+          "y": 216,
+          "width": 233,
+          "height": 160
+        },
+        "timestamp": "2026-05-31T21:09:08.213458"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:09:29.210275",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "59V179379",
+        "confidence": 100.0,
+        "detection_confidence": 76.0,
+        "bbox": {
+          "x": 85,
+          "y": 361,
+          "width": 252,
+          "height": 173
+        },
+        "timestamp": "2026-05-31T21:09:29.210275"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:09:35.209380",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "59V179379",
+        "confidence": 99.22,
+        "detection_confidence": 84.97,
+        "bbox": {
+          "x": 263,
+          "y": 273,
+          "width": 236,
+          "height": 148
+        },
+        "timestamp": "2026-05-31T21:09:35.209380"
+      },
+      {
+        "id": 2,
+        "plate": "54L19999",
+        "confidence": 99.97,
+        "detection_confidence": 82.77,
+        "bbox": {
+          "x": 698,
+          "y": 286,
+          "width": 191,
+          "height": 103
+        },
+        "timestamp": "2026-05-31T21:09:35.209380"
+      }
+    ]
+  }
+]

@@ -28,6 +28,7 @@ import math
 import re
 import base64
 import logging
+from contextlib import asynccontextmanager
 from io import BytesIO
 from typing import Optional, List, Dict, Any
 from datetime import datetime
@@ -70,6 +71,9 @@ ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZĐ"
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 MODEL_DIR = Path(__file__).parent
 FEEDBACK_LOG_PATH = MODEL_DIR / "feedback_logs.json"
+LIVE_LOG_PATH = MODEL_DIR / "live_stream_logs.json"
+MEDIA_SCAN_LOG_PATH = MODEL_DIR / "media_scan_logs.json"
+UNIFIED_HISTORY_PATH = MODEL_DIR / "unified_scan_history.json"
 
 logger.info(f"Using device: {DEVICE}")
 
@@ -439,6 +443,74 @@ def vnm_plate_post_process(text):
 
 
 # ==================================================================================
+# UNIFIED HISTORY MANAGEMENT
+# ==================================================================================
+
+def save_to_unified_history(scan_id, source, plate, confidence, timestamp, detections=None, video_path=None):
+    """Save scan to unified history"""
+    try:
+        if UNIFIED_HISTORY_PATH.exists():
+            with open(UNIFIED_HISTORY_PATH, "r", encoding="utf-8") as f:
+                history = json.load(f)
+        else:
+            history = []
+        
+        entry = {
+            "id": scan_id,
+            "timestamp": timestamp,
+            "source": source,  # "Image Upload", "Video Upload", or "Live Stream"
+            "plate": plate,
+            "confidence": confidence,
+            "detections": detections or [],
+            "video_path": video_path,
+            "status": "success" if plate else "no_plate_detected"
+        }
+        
+        history.append(entry)
+        
+        # Keep last 5000 entries
+        history = history[-5000:]
+        
+        with open(UNIFIED_HISTORY_PATH, "w", encoding="utf-8") as f:
+            json.dump(history, f, indent=2, ensure_ascii=False)
+        
+        logger.info(f"Scan saved to unified history: {scan_id} - {source}")
+    except Exception as e:
+        logger.warning(f"Could not save to unified history: {e}")
+
+
+def get_unified_history(limit=100, offset=0, source=None, search_plate=None):
+    """Retrieve unified scan history with optional filtering"""
+    try:
+        if not UNIFIED_HISTORY_PATH.exists():
+            return []
+        
+        with open(UNIFIED_HISTORY_PATH, "r", encoding="utf-8") as f:
+            history = json.load(f)
+        
+        # Filter by source if specified
+        if source:
+            history = [h for h in history if h.get("source") == source]
+        
+        # Filter by plate if search term specified
+        if search_plate:
+            search_plate = search_plate.lower()
+            history = [h for h in history if search_plate in h.get("plate", "").lower() or search_plate in h.get("id", "").lower()]
+        
+        # Sort by timestamp descending (newest first)
+        history.sort(key=lambda x: x.get("timestamp", ""), reverse=True)
+        
+        # Apply pagination
+        total = len(history)
+        paginated = history[offset:offset+limit]
+        
+        return paginated, total
+    except Exception as e:
+        logger.error(f"Error retrieving unified history: {e}")
+        return [], 0
+
+
+# ==================================================================================
 # MODEL INITIALIZATION
 # ==================================================================================
 
@@ -459,7 +531,7 @@ class ModelManager:
             if yolo_path.exists():
                 try:
                     self.yolo_model = YOLO(str(yolo_path))
-                    logger.info("✓ YOLO model loaded successfully")
+                    logger.info("âœ“ YOLO model loaded successfully")
                 except AttributeError as ae:
                     logger.exception("YOLO model load failed (possible ultralytics version mismatch): %s", ae)
                     logger.error(
@@ -482,10 +554,14 @@ class ModelManager:
             self.crnn_model = CRNN(len(ALPHABET) + 1).to(DEVICE)
 
             if crnn_path.exists():
-                self.crnn_model.load_state_dict(torch.load(str(crnn_path), map_location=DEVICE))
-                logger.info("✓ CRNN model loaded successfully")
+                try:
+                    state_dict = torch.load(str(crnn_path), map_location=DEVICE, weights_only=True)
+                except TypeError:
+                    state_dict = torch.load(str(crnn_path), map_location=DEVICE)
+                self.crnn_model.load_state_dict(state_dict)
+                logger.info("âœ“ CRNN model loaded successfully")
             else:
-                logger.warning(f"⚠ CRNN model not found at {crnn_path}")
+                logger.warning(f"âš  CRNN model not found at {crnn_path}")
 
             self.crnn_model.eval()
         except Exception as e:
@@ -564,7 +640,7 @@ class ScanImageResponse(BaseModel):
     cropped_plate_base64: str
     bbox: Dict[str, int]
     timestamp: str
-    # Optional: add field for multiple plates if needed, but keep backward compatibility
+    detections: Optional[List[Dict[str, Any]]] = None
     additional_plates: Optional[List[Dict[str, Any]]] = None
 
 class ScanVideoRequest(BaseModel):
@@ -576,6 +652,14 @@ class ScanVideoResponse(BaseModel):
     discovered_plates: List[Dict[str, Any]]
     total_frames: int
     processing_time_ms: float
+    timestamp: str
+
+class LiveFrameResponse(BaseModel):
+    status: str
+    detections: List[Dict[str, Any]]
+    processing_time_ms: float
+    frame_width: int
+    frame_height: int
     timestamp: str
 
 class FeedbackRequest(BaseModel):
@@ -653,6 +737,18 @@ async def scan_image(request: ScanImageRequest):
         # Detect plates (returns list)
         detections = models.detect_plate(img)
         if not detections:  # empty list or None
+            scan_id = f"IMG-{int(time.time() * 1000) % 1000000:06d}"
+            timestamp = datetime.now().isoformat()
+            
+            save_to_unified_history(
+                scan_id=scan_id,
+                source="Image Upload",
+                plate="",
+                confidence=0.0,
+                timestamp=timestamp,
+                detections=[]
+            )
+            
             return ScanImageResponse(
                 status="no_plate_detected",
                 plate="",
@@ -661,48 +757,105 @@ async def scan_image(request: ScanImageRequest):
                 original_image_base64=request.image_base64,
                 cropped_plate_base64="",
                 bbox={},
-                timestamp=datetime.now().isoformat(),
+                timestamp=timestamp,
+                detections=[],
                 additional_plates=[]
             )
 
         # Process all detected plates
         plates_info = []
-        for det in detections:
+        h, w = img.shape[:2]
+        for idx, det in enumerate(detections):
             x1, y1, x2, y2 = det["bbox"]
+            x1, y1 = max(0, x1), max(0, y1)
+            x2, y2 = min(w, x2), min(h, y2)
+            if x2 <= x1 or y2 <= y1:
+                continue
+
             cropped = img[y1:y2, x1:x2]
             gray_plate = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
             text, conf = models.recognize_plate(gray_plate)
+
+            _, plate_buffer = cv2.imencode('.jpg', cropped)
+            cropped_plate_base64 = base64.b64encode(plate_buffer).decode()
+
             plates_info.append({
+                "id": idx + 1,
                 "plate": text if text else "",
-                "confidence": conf,
-                "bbox": {"x": x1, "y": y1, "width": x2 - x1, "height": y2 - y1}
+                "confidence": round(conf, 2),
+                "detection_confidence": round(det["confidence"] * 100, 2),
+                "bbox": {"x": x1, "y": y1, "width": x2 - x1, "height": y2 - y1},
+                "cropped_plate_base64": cropped_plate_base64,
+                "is_primary": idx == 0
             })
+
+        if not plates_info:
+            scan_id = f"IMG-{int(time.time() * 1000) % 1000000:06d}"
+            timestamp = datetime.now().isoformat()
+            
+            save_to_unified_history(
+                scan_id=scan_id,
+                source="Image Upload",
+                plate="",
+                confidence=0.0,
+                timestamp=timestamp,
+                detections=[]
+            )
+            
+            return ScanImageResponse(
+                status="no_plate_detected",
+                plate="",
+                confidence=0.0,
+                processing_time_ms=round((time.time() - start_time) * 1000, 2),
+                original_image_base64=request.image_base64,
+                cropped_plate_base64="",
+                bbox={},
+                timestamp=timestamp,
+                detections=[],
+                additional_plates=[]
+            )
 
         # Primary plate: highest confidence
         primary = plates_info[0]
         # Additional plates (excluding primary if exists)
         additional = plates_info[1:] if len(plates_info) > 1 else []
 
-        # Encode cropped plate of primary detection
-        x1, y1, x2, y2 = detections[0]["bbox"]
-        cropped_plate = img[y1:y2, x1:x2]
-        _, plate_buffer = cv2.imencode('.jpg', cropped_plate)
-        cropped_plate_base64 = base64.b64encode(plate_buffer).decode()
-
         # Draw bounding box on original image (draw all detected plates)
         annotated_img = img.copy()
-        for det in detections:
-            x1, y1, x2, y2 = det["bbox"]
+        for plate_info in plates_info:
+            bbox = plate_info["bbox"]
+            x1, y1 = bbox["x"], bbox["y"]
+            x2, y2 = x1 + bbox["width"], y1 + bbox["height"]
             cv2.rectangle(annotated_img, (x1, y1), (x2, y2), (0, 255, 0), 2)
-        # Put primary plate text above its bounding box
-        px1, py1, px2, py2 = detections[0]["bbox"]
-        cv2.putText(annotated_img, f"{primary['plate']} {primary['confidence']:.1f}%",
-                   (px1, py1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0, 255, 0), 2)
+            label = plate_info["plate"] or f"Plate {plate_info['id']}"
+            cv2.putText(
+                annotated_img,
+                f"{label} {plate_info['confidence']:.1f}%",
+                (x1, max(20, y1 - 10)),
+                cv2.FONT_HERSHEY_SIMPLEX,
+                0.7,
+                (0, 255, 0),
+                2
+            )
 
         _, img_buffer = cv2.imencode('.jpg', annotated_img)
         annotated_img_base64 = base64.b64encode(img_buffer).decode()
 
         processing_time = round((time.time() - start_time) * 1000, 2)
+        
+        # Generate unique scan ID
+        scan_id = f"IMG-{int(time.time() * 1000) % 1000000:06d}"
+        timestamp = datetime.now().isoformat()
+        
+        # Save to unified history
+        save_to_unified_history(
+            scan_id=scan_id,
+            source="Image Upload",
+            plate=primary['plate'] if primary['plate'] else "",
+            confidence=primary['confidence'],
+            timestamp=timestamp,
+            detections=plates_info
+        )
 
         return ScanImageResponse(
             status="success",
@@ -710,9 +863,10 @@ async def scan_image(request: ScanImageRequest):
             confidence=primary['confidence'],
             processing_time_ms=processing_time,
             original_image_base64=annotated_img_base64,
-            cropped_plate_base64=cropped_plate_base64,
+            cropped_plate_base64=primary['cropped_plate_base64'],
             bbox=primary['bbox'],
-            timestamp=datetime.now().isoformat(),
+            timestamp=timestamp,
+            detections=plates_info,
             additional_plates=additional
         )
 
@@ -721,74 +875,311 @@ async def scan_image(request: ScanImageRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 
-@app.post("/api/scan-video-file", response_model=ScanVideoResponse)
+@app.post("/api/scan-video-file")
 async def scan_video_file(request: ScanVideoRequest, background_tasks: BackgroundTasks):
     """
-    Process video file for license plates.
-    Detects multiple plates per frame and records unique plates across video.
+    Process video file, detect plates, draw bounding boxes, return annotated video URL + detection list.
     """
     start_time = time.time()
+    temp_video_path = None
 
     try:
         # Decode video
         video_data = base64.b64decode(request.video_base64)
-        video_path = MODEL_DIR / f"temp_{int(time.time())}.mp4"
-        with open(video_path, "wb") as f:
+        input_video_path = MODEL_DIR / f"temp_input_{int(time.time())}.mp4"
+        with open(input_video_path, "wb") as f:
             f.write(video_data)
 
-        # Process video
-        cap = cv2.VideoCapture(str(video_path))
+        # Má»Ÿ video
+        cap = cv2.VideoCapture(str(input_video_path))
         if not cap.isOpened():
             raise HTTPException(status_code=400, detail="Invalid video file")
+        if models.yolo_model is None:
+            raise HTTPException(status_code=503, detail="YOLO model is not loaded")
+
+        fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
+        width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+        # Táº¡o file táº¡m cho video Ä‘áº§u ra
+        temp_video_path = MODEL_DIR / f"temp_output_{int(time.time())}.mp4"
+        out = None
+        for codec in ("avc1", "mp4v"):
+            fourcc = cv2.VideoWriter_fourcc(*codec)
+            out = cv2.VideoWriter(str(temp_video_path), fourcc, fps, (width, height))
+            if out.isOpened():
+                break
+            out.release()
+        if out is None or not out.isOpened():
+            raise HTTPException(status_code=500, detail="Could not create output video")
 
         discovered_plates = []
+        detection_events = []
         frame_count = 0
-        fps = cap.get(cv2.CAP_PROP_FPS) or 30.0
-
-        # For tracking unique plates (simple text matching)
-        seen_plates = set()
+        seen_plates = {}
+        active_overlays = []
 
         while True:
             ret, frame = cap.read()
             if not ret:
                 break
-
             frame_count += 1
-            # Process every 5th frame for efficiency
-            if frame_count % 5 == 0:
-                detections = models.detect_plate(frame)
-                for det in detections:
-                    x1, y1, x2, y2 = det["bbox"]
-                    cropped_plate = frame[y1:y2, x1:x2]
-                    gray_plate = cv2.cvtColor(cropped_plate, cv2.COLOR_BGR2GRAY)
-                    plate_text, confidence = models.recognize_plate(gray_plate)
 
-                    if plate_text and plate_text not in seen_plates:
-                        seen_plates.add(plate_text)
+            # Xá»­ lÃ½ má»—i 5 frame Ä‘á»ƒ tÄƒng tá»‘c (cÃ³ thá»ƒ Ä‘iá»u chá»‰nh)
+            if frame_count % 5 == 0:
+                # Resize náº¿u cáº§n (giá»‘ng script user)
+                scale = 1.0
+                if max(frame.shape[:2]) > 1024:
+                    scale = 1024 / max(frame.shape[:2])
+                    frame_resized = cv2.resize(frame, (int(frame.shape[1]*scale), int(frame.shape[0]*scale)))
+                else:
+                    frame_resized = frame
+
+                results = models.yolo_model(frame_resized, conf=0.5, iou=0.5, augment=True, verbose=False)
+                if results[0].boxes:
+                    boxes = results[0].boxes.xyxy.cpu().numpy() if results[0].boxes else []
+                    # Scale back boxes
+                    if scale != 1.0:
+                        boxes = [[x / scale for x in box] for box in boxes]
+
+                    for box in boxes:
+                        x1, y1, x2, y2 = map(int, box)
+                        x1, y1 = max(0, x1), max(0, y1)
+                        x2, y2 = min(width, x2), min(height, y2)
+                        if x2 <= x1 or y2 <= y1:
+                            continue
+
+                        cropped = frame[y1:y2, x1:x2]
+                        gray_plate = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+                        plate_text, confidence = models.recognize_plate(gray_plate)
                         timestamp_sec = frame_count / fps
-                        discovered_plates.append({
-                            "plate": plate_text,
+                        event = {
+                            "plate": plate_text or "",
                             "confidence": round(confidence, 2),
                             "frame": frame_count,
                             "timestamp": f"{int(timestamp_sec // 60):02d}:{int(timestamp_sec % 60):02d}",
-                            "bbox": {"x": x1, "y": y1, "width": x2 - x1, "height": y2 - y1}
+                            "timestamp_seconds": round(timestamp_sec, 3),
+                            "bbox": {"x": x1, "y": y1, "width": x2-x1, "height": y2-y1}
+                        }
+                        detection_events.append(event)
+                        active_overlays.append({
+                            "event": event,
+                            "label": plate_text if plate_text else "Plate",
+                            "expires_at": frame_count + 4
                         })
 
+                        label = plate_text if plate_text else "Plate"
+                        cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                        cv2.putText(
+                            frame,
+                            f"{label} {confidence:.1f}%",
+                            (x1, max(20, y1 - 8)),
+                            cv2.FONT_HERSHEY_SIMPLEX,
+                            0.6,
+                            (0, 255, 0),
+                            2
+                        )
+
+                        if plate_text:
+                            if plate_text not in seen_plates:
+                                seen_plates[plate_text] = len(discovered_plates)
+                                discovered_plates.append({
+                                    "plate": plate_text,
+                                    "confidence": round(confidence, 2),
+                                    "frame": frame_count,
+                                    "timestamp": event["timestamp"],
+                                    "first_frame": frame_count,
+                                    "last_frame": frame_count,
+                                    "first_timestamp": event["timestamp"],
+                                    "last_timestamp": event["timestamp"],
+                                    "first_timestamp_seconds": event["timestamp_seconds"],
+                                    "last_timestamp_seconds": event["timestamp_seconds"],
+                                    "occurrences": 1,
+                                    "bbox": event["bbox"]
+                                })
+                            else:
+                                plate_idx = seen_plates[plate_text]
+                                discovered_plate = discovered_plates[plate_idx]
+                                discovered_plate["confidence"] = max(discovered_plate["confidence"], round(confidence, 2))
+                                discovered_plate["last_frame"] = frame_count
+                                discovered_plate["last_timestamp"] = event["timestamp"]
+                                discovered_plate["last_timestamp_seconds"] = event["timestamp_seconds"]
+                                discovered_plate["occurrences"] += 1
+                                discovered_plate["bbox"] = event["bbox"]
+                            logger.info(f"[VIDEO] {event['timestamp']} frame {frame_count}: {plate_text} ({confidence:.1f}%)")
+                else:
+                    # Váº«n ghi frame khÃ´ng cÃ³ box
+                    pass
+
+            if frame_count % 5 != 0 and active_overlays:
+                active_overlays = [overlay for overlay in active_overlays if overlay["expires_at"] >= frame_count]
+                for overlay in active_overlays:
+                    event = overlay["event"]
+                    bbox = event["bbox"]
+                    x1, y1 = bbox["x"], bbox["y"]
+                    x2, y2 = x1 + bbox["width"], y1 + bbox["height"]
+                    cv2.rectangle(frame, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                    cv2.putText(
+                        frame,
+                        f"{overlay['label']} {event['confidence']:.1f}%",
+                        (x1, max(20, y1 - 8)),
+                        cv2.FONT_HERSHEY_SIMPLEX,
+                        0.6,
+                        (0, 255, 0),
+                        2
+                    )
+
+            out.write(frame)
+
         cap.release()
-        background_tasks.add_task(os.unlink, str(video_path))
+        out.release()
+        background_tasks.add_task(os.unlink, str(input_video_path))
 
         processing_time = round((time.time() - start_time) * 1000, 2)
+        timestamp = datetime.now().isoformat()
+        
+        # Generate unique scan ID for video
+        video_scan_id = f"VID-{int(time.time() * 1000) % 1000000:06d}"
+        
+        # Save primary plate to unified history (or mark as no plate if none found)
+        primary_plate = discovered_plates[0]["plate"] if discovered_plates else ""
+        primary_confidence = discovered_plates[0]["confidence"] if discovered_plates else 0.0
+        
+        save_to_unified_history(
+            scan_id=video_scan_id,
+            source="Video Upload",
+            plate=primary_plate,
+            confidence=primary_confidence,
+            timestamp=timestamp,
+            detections=discovered_plates
+        )
 
-        return ScanVideoResponse(
-            status="success",
-            discovered_plates=discovered_plates,
-            total_frames=frame_count,
-            processing_time_ms=processing_time,
-            timestamp=datetime.now().isoformat()
+        # Chuáº©n bá»‹ response: tráº£ vá» file video Ä‘Ã£ xá»­ lÃ½ kÃ¨m danh sÃ¡ch
+        # DÃ¹ng FileResponse Ä‘á»ƒ gá»­i file trá»±c tiáº¿p, sau Ä‘Ã³ xÃ³a file táº¡m
+        def cleanup():
+            if temp_video_path and temp_video_path.exists():
+                os.unlink(temp_video_path)
+
+        # LÆ°u thÃ´ng tin video vÃ o background task Ä‘á»ƒ xÃ³a sau khi gá»­i
+        background_tasks.add_task(cleanup)
+
+        # Tráº£ vá» JSON + file video (dÃ¹ng custom response)
+        # Tuy nhiÃªn FastAPI khÃ´ng dá»… tráº£ vá» cáº£ JSON vÃ  file cÃ¹ng lÃºc.
+        # Giáº£i phÃ¡p: tráº£ vá» file kÃ¨m header metadata hoáº·c táº¡o download link.
+        # á»ž Ä‘Ã¢y ta tráº£ vá» FileResponse vÃ  thÃªm header X-Detections
+        detections_json = json.dumps({
+            "status": "success",
+            "discovered_plates": discovered_plates,
+            "detection_events": detection_events,
+            "total_frames": frame_count,
+            "fps": fps,
+            "processing_time_ms": processing_time,
+            "timestamp": timestamp
+        })
+        return FileResponse(
+            path=str(temp_video_path),
+            media_type="video/mp4",
+            filename=f"annotated_{request.filename}",
+            headers={
+                "X-Detections": detections_json,   # JSON metadata trong header
+                "Access-Control-Expose-Headers": "X-Detections"
+            }
         )
 
     except Exception as e:
         logger.error(f"Video scan error: {e}")
+        if temp_video_path and temp_video_path.exists():
+            os.unlink(temp_video_path)
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.post("/api/scan-live-frame", response_model=LiveFrameResponse)
+async def scan_live_frame(request: ScanImageRequest):
+    """Scan one webcam frame and return all detected plates."""
+    start_time = time.time()
+    timestamp = datetime.now().isoformat()
+
+    try:
+        img_data = base64.b64decode(request.image_base64)
+        nparr = np.frombuffer(img_data, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+        if img is None:
+            raise HTTPException(status_code=400, detail="Invalid image data")
+        if models.yolo_model is None:
+            raise HTTPException(status_code=503, detail="YOLO model is not loaded")
+
+        height, width = img.shape[:2]
+        detections = []
+
+        for idx, det in enumerate(models.detect_plate(img, conf=0.45, iou=0.5, augment=False)):
+            x1, y1, x2, y2 = det["bbox"]
+            x1, y1 = max(0, x1), max(0, y1)
+            x2, y2 = min(width, x2), min(height, y2)
+            if x2 <= x1 or y2 <= y1:
+                continue
+
+            cropped = img[y1:y2, x1:x2]
+            gray_plate = cv2.cvtColor(cropped, cv2.COLOR_BGR2GRAY)
+            plate_text, confidence = models.recognize_plate(gray_plate)
+
+            detection = {
+                "id": idx + 1,
+                "plate": plate_text or "",
+                "confidence": round(confidence, 2),
+                "detection_confidence": round(det["confidence"] * 100, 2),
+                "bbox": {"x": x1, "y": y1, "width": x2 - x1, "height": y2 - y1},
+                "timestamp": timestamp,
+            }
+            detections.append(detection)
+
+            if plate_text:
+                logger.info(f"[LIVE] {timestamp}: {plate_text} ({confidence:.1f}%)")
+
+        if detections:
+            log_entry = {
+                "timestamp": timestamp,
+                "source": request.filename,
+                "detections": detections,
+            }
+            try:
+                if LIVE_LOG_PATH.exists():
+                    with open(LIVE_LOG_PATH, "r", encoding="utf-8") as f:
+                        logs = json.load(f)
+                else:
+                    logs = []
+                logs.append(log_entry)
+                with open(LIVE_LOG_PATH, "w", encoding="utf-8") as f:
+                    json.dump(logs[-1000:], f, indent=2, ensure_ascii=False)
+            except Exception as log_error:
+                logger.warning(f"Could not write live stream log: {log_error}")
+            
+            # Also save each detection to unified history
+            for idx, detection in enumerate(detections):
+                live_scan_id = f"LIVE-{int(time.time() * 1000) % 1000000:06d}-{idx}"
+                if detection.get("plate"):
+                    save_to_unified_history(
+                        scan_id=live_scan_id,
+                        source="Live Stream",
+                        plate=detection.get("plate", ""),
+                        confidence=detection.get("confidence", 0.0),
+                        timestamp=timestamp,
+                        detections=[detection]
+                    )
+
+        return LiveFrameResponse(
+            status="success",
+            detections=detections,
+            processing_time_ms=round((time.time() - start_time) * 1000, 2),
+            frame_width=width,
+            frame_height=height,
+            timestamp=timestamp,
+        )
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Live frame scan error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -870,24 +1261,128 @@ async def get_feedback_stats():
 
 
 # ==================================================================================
+# UNIFIED SCAN HISTORY ENDPOINTS
+# ==================================================================================
+
+@app.get("/api/scan-history")
+async def get_scan_history(limit: int = 50, offset: int = 0, source: str = None, search: str = None):
+    """
+    Get unified scan history from all sources (Image, Video, Live Stream).
+    
+    Parameters:
+    - limit: Number of records to return (default: 50)
+    - offset: Pagination offset (default: 0)
+    - source: Filter by source ('Image Upload', 'Video Upload', 'Live Stream')
+    - search: Search by plate number or scan ID
+    """
+    try:
+        history, total = get_unified_history(limit=limit, offset=offset, source=source, search_plate=search)
+        
+        return {
+            "status": "success",
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "records": history,
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error getting scan history: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/scan-history/summary")
+async def get_scan_history_summary():
+    """Get summary statistics of all scans by source"""
+    try:
+        if not UNIFIED_HISTORY_PATH.exists():
+            return {
+                "total_scans": 0,
+                "by_source": {},
+                "total_plates_detected": 0,
+                "average_confidence": 0.0,
+                "timestamp": datetime.now().isoformat()
+            }
+        
+        with open(UNIFIED_HISTORY_PATH, "r", encoding="utf-8") as f:
+            history = json.load(f)
+        
+        by_source = {}
+        total_confidence = 0
+        plates_detected = 0
+        
+        for record in history:
+            source = record.get("source", "Unknown")
+            by_source[source] = by_source.get(source, 0) + 1
+            
+            if record.get("plate"):
+                plates_detected += 1
+                total_confidence += record.get("confidence", 0)
+        
+        avg_confidence = (total_confidence / plates_detected) if plates_detected > 0 else 0.0
+        
+        return {
+            "total_scans": len(history),
+            "by_source": by_source,
+            "total_plates_detected": plates_detected,
+            "average_confidence": round(avg_confidence, 2),
+            "timestamp": datetime.now().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Error getting scan history summary: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/scan-history/by-source/{source}")
+async def get_scan_history_by_source(source: str, limit: int = 50, offset: int = 0):
+    """Get scan history filtered by specific source"""
+    try:
+        valid_sources = ["Image Upload", "Video Upload", "Live Stream"]
+        if source not in valid_sources:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid source. Must be one of: {', '.join(valid_sources)}"
+            )
+        
+        history, total = get_unified_history(limit=limit, offset=offset, source=source)
+        
+        return {
+            "status": "success",
+            "source": source,
+            "total": total,
+            "limit": limit,
+            "offset": offset,
+            "records": history,
+            "timestamp": datetime.now().isoformat()
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error getting scan history by source: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================================================================================
 # STARTUP & SHUTDOWN
 # ==================================================================================
 
-@app.on_event("startup")
-async def startup_event():
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
     logger.info("=" * 80)
     logger.info("LPR Backend API Starting Up...")
     logger.info("=" * 80)
     logger.info(f"Device: {DEVICE}")
-    logger.info(f"YOLO Model: {'✓ Loaded' if models.yolo_model else '✗ Not Found'}")
-    logger.info(f"CRNN Model: {'✓ Loaded' if models.crnn_model else '✗ Not Found'}")
+    logger.info(f"YOLO Model: {'âœ“ Loaded' if models.yolo_model else 'âœ— Not Found'}")
+    logger.info(f"CRNN Model: {'âœ“ Loaded' if models.crnn_model else 'âœ— Not Found'}")
     logger.info("Multi-plate detection: ENABLED")
     logger.info("=" * 80)
-
-
-@app.on_event("shutdown")
-async def shutdown_event():
+    
+    yield  # á»¨ng dá»¥ng cháº¡y á»Ÿ Ä‘Ã¢y
+    
+    # Shutdown
     logger.info("LPR Backend API Shutting Down...")
+
 
 
 # ==================================================================================

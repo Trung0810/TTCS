@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+﻿import { useState, useEffect, useRef, useCallback } from "react";
 import {
   LayoutDashboard,
   Image,
@@ -37,10 +37,10 @@ import {
   Loader,
 } from "lucide-react";
 
-// ─── CONFIGURATION ─────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ CONFIGURATION Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const API_BASE_URL = "http://localhost:8000/api";
 
-// ─── MOCK DATA (fallback if API unavailable) ─────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ MOCK DATA (fallback if API unavailable) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 const HISTORY_DATA = [
   {
@@ -69,7 +69,7 @@ const HISTORY_DATA = [
   },
 ];
 
-// ─── HELPER FUNCTIONS ────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ HELPER FUNCTIONS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 const confidenceColor = (score) => {
   if (score >= 90)
@@ -102,7 +102,7 @@ const fileToBase64 = (file) => {
   });
 };
 
-// ─── PLATE DISPLAY COMPONENT ───────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ PLATE DISPLAY COMPONENT Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function PlateDisplay({ plate, size = "md" }) {
   const isTwo = plate.includes("\n");
@@ -132,7 +132,7 @@ function PlateDisplay({ plate, size = "md" }) {
   );
 }
 
-// ─── TOAST NOTIFICATION ────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ TOAST NOTIFICATION Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function Toast({ message, type = "success", onClose }) {
   useEffect(() => {
@@ -163,7 +163,7 @@ function Toast({ message, type = "success", onClose }) {
   );
 }
 
-// ─── LIVE STREAM CANVAS ────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ LIVE STREAM CANVAS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function LiveStreamCanvas({ isPlaying }) {
   const canvasRef = useRef(null);
@@ -235,7 +235,7 @@ function LiveStreamCanvas({ isPlaying }) {
         ctx.fillStyle = "rgba(148,163,184,0.9)";
         ctx.font = "bold 16px monospace";
         ctx.textAlign = "center";
-        ctx.fillText("⏸  STREAM PAUSED", W / 2, H / 2);
+        ctx.fillText("Ã¢ÂÂ¸  STREAM PAUSED", W / 2, H / 2);
         animRef.current = requestAnimationFrame(draw);
         return;
       }
@@ -315,7 +315,7 @@ function LiveStreamCanvas({ isPlaying }) {
       ctx.font = "11px monospace";
       ctx.textAlign = "left";
       ctx.fillText(
-        `● LIVE  ●  REC  ${new Date().toLocaleTimeString()}`,
+        `Ã¢â€”Â LIVE  Ã¢â€”Â  REC  ${new Date().toLocaleTimeString()}`,
         20,
         24,
       );
@@ -340,7 +340,7 @@ function LiveStreamCanvas({ isPlaying }) {
   );
 }
 
-// ─── VIDEO SCAN CANVAS ────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ VIDEO SCAN CANVAS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function VideoScanCanvas({
   progress,
@@ -489,7 +489,7 @@ function VideoScanCanvas({
       ctx.fillStyle = "rgba(168,85,247,0.7)";
       ctx.font = "11px monospace";
       ctx.textAlign = "left";
-      ctx.fillText("AI VIDEO ANALYSIS  ●  YOLOv11 + CRNN", 16, 18);
+      ctx.fillText("AI VIDEO ANALYSIS  Ã¢â€”Â  YOLOv11 + CRNN", 16, 18);
 
       animRef.current = requestAnimationFrame(draw);
     };
@@ -509,12 +509,13 @@ function VideoScanCanvas({
   );
 }
 
-// ─── IMAGE SCAN MODULE ────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ IMAGE SCAN MODULE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function ImageScanModule() {
   const [dragOver, setDragOver] = useState(false);
   const [scanning, setScanning] = useState(false);
-  const [result, setResult] = useState(null);
+  const [detections, setDetections] = useState([]);
+  const [annotatedImage, setAnnotatedImage] = useState(null);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -537,7 +538,8 @@ function ImageScanModule() {
 
   const scanImage = async (file) => {
     setScanning(true);
-    setResult(null);
+    setDetections([]);
+    setAnnotatedImage(null);
     setError(null);
     setProgress(0);
     setSelectedFile(file);
@@ -572,16 +574,39 @@ function ImageScanModule() {
       const data = await response.json();
 
       if (data.status === "success") {
-        setResult({
-          plate: data.plate,
-          confidence: data.confidence,
-          time: data.processing_time_ms,
-          plateType: "1-line",
-          region: "Vietnam",
-          bbox: data.bbox,
-          originalImage: data.original_image_base64,
-          croppedPlate: data.cropped_plate_base64,
-        });
+        const apiDetections =
+          Array.isArray(data.detections) && data.detections.length > 0
+            ? data.detections
+            : [
+                {
+                  id: 1,
+                  plate: data.plate,
+                  confidence: data.confidence,
+                  bbox: data.bbox,
+                  cropped_plate_base64: data.cropped_plate_base64,
+                  is_primary: true,
+                },
+                ...(data.additional_plates || []),
+              ];
+
+        const normalized = apiDetections
+          .filter((det) => det && det.bbox)
+          .map((det, index) => ({
+            id: det.id || index + 1,
+            plate: det.plate || `Plate ${index + 1}`,
+            confidence: Number(det.confidence || 0),
+            detectionConfidence: Number(det.detection_confidence || 0),
+            time: data.processing_time_ms,
+            bbox: det.bbox,
+            croppedPlate:
+              det.cropped_plate_base64 ||
+              det.croppedPlate ||
+              (index === 0 ? data.cropped_plate_base64 : ""),
+            isPrimary: det.is_primary ?? index === 0,
+          }));
+
+        setAnnotatedImage(data.original_image_base64);
+        setDetections(normalized);
       } else {
         setError("No license plate detected in the image");
       }
@@ -643,7 +668,7 @@ function ImageScanModule() {
                 Drop vehicle image here
               </p>
               <p className="text-slate-500 text-sm">
-                or click to select image · PNG, JPG, WebP
+                or click to select image Ã‚Â· PNG, JPG, WebP
               </p>
             </>
           )}
@@ -660,19 +685,19 @@ function ImageScanModule() {
         </div>
       )}
 
-      {result && (
+      {detections.length > 0 && (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 animate-fade-in">
           <div className="bg-white/[0.02] border border-white/10 rounded-2xl p-5 backdrop-blur-sm">
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-              Detection Result
+              Detection Result ({detections.length} plates)
             </p>
             <div
               className="relative bg-black rounded-xl overflow-hidden mb-4"
               style={{ aspectRatio: "16/9" }}
             >
-              {result.originalImage && (
+              {annotatedImage && (
                 <img
-                  src={`data:image/jpeg;base64,${result.originalImage}`}
+                  src={`data:image/jpeg;base64,${annotatedImage}`}
                   alt="Detected"
                   className="w-full h-full object-cover"
                 />
@@ -681,76 +706,65 @@ function ImageScanModule() {
                 {selectedFile?.name}
               </div>
             </div>
-            <div className="flex items-center gap-3">
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-white/10 px-3 py-2 flex-1">
-                <p className="text-xs text-slate-500 mb-1">Cropped Plate</p>
-                {result.croppedPlate && (
-                  <img
-                    src={`data:image/jpeg;base64,${result.croppedPlate}`}
-                    alt="Cropped"
-                    className="w-full h-auto rounded mb-2 border border-white/10"
-                  />
-                )}
-                <div className="bg-gradient-to-br from-yellow-400 to-yellow-500 rounded px-2 py-1.5 inline-block border border-yellow-600">
-                  <span className="font-mono font-bold text-gray-950 text-sm tracking-widest">
-                    {result.plate}
-                  </span>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {detections.map((det, idx) => (
+                <div
+                  key={`${det.id}-${idx}`}
+                  className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-white/10 px-3 py-2"
+                >
+                  <div className="flex items-center justify-between gap-2 mb-2">
+                    <p className="text-xs text-slate-500">
+                      {det.isPrimary ? "Primary Plate" : `Plate ${idx + 1}`}
+                    </p>
+                    <span
+                      className={`text-xs px-2 py-0.5 rounded border ${confidenceColor(det.confidence)}`}
+                    >
+                      {det.confidence.toFixed(1)}%
+                    </span>
+                  </div>
+                  {det.croppedPlate && (
+                    <img
+                      src={`data:image/jpeg;base64,${det.croppedPlate}`}
+                      alt="Cropped"
+                      className="w-full h-24 object-contain rounded mb-2 border border-white/10 bg-black/30"
+                    />
+                  )}
+                  <PlateDisplay plate={det.plate} size="sm" />
                 </div>
-              </div>
-              <div className="bg-slate-800/50 backdrop-blur-sm rounded-lg border border-white/10 px-3 py-2">
-                <p className="text-xs text-slate-500 mb-1">Type</p>
-                <p className="text-xs font-medium text-slate-300">
-                  {result.plateType}
-                </p>
-              </div>
+              ))}
             </div>
           </div>
 
           <div className="space-y-3">
-            {[
-              {
-                label: "Detected Plate",
-                value: result.plate,
-                accent: "emerald",
-              },
-              {
-                label: "Confidence Score",
-                value: `${result.confidence.toFixed(2)}%`,
-                accent: "emerald",
-              },
-              {
-                label: "Processing Time",
-                value: `${result.time.toFixed(0)}ms`,
-                accent: "sky",
-              },
-              {
-                label: "Plate Type",
-                value: result.plateType,
-                accent: "violet",
-              },
-              { label: "Region", value: result.region, accent: "violet" },
-            ].map(({ label, value, accent }) => (
+            {detections.map((det, idx) => (
               <div
-                key={label}
-                className="flex items-center justify-between bg-white/[0.02] border border-white/10 rounded-xl px-4 py-3 backdrop-blur-sm hover:border-white/20 transition-colors"
+                key={`${det.id}-summary-${idx}`}
+                className="bg-white/[0.02] border border-white/10 rounded-xl px-4 py-3 backdrop-blur-sm hover:border-white/20 transition-colors"
               >
-                <span className="text-sm text-slate-400">{label}</span>
-                <span
-                  className={`text-sm font-semibold ${
-                    accent === "emerald"
-                      ? "text-emerald-400"
-                      : accent === "sky"
-                        ? "text-sky-400"
-                        : "text-violet-400"
-                  }`}
-                >
-                  {value}
-                </span>
+                <div className="flex items-center justify-between gap-3">
+                  <span className="text-sm text-slate-400">
+                    Plate {idx + 1}
+                  </span>
+                  <span className="text-sm font-semibold text-emerald-400">
+                    {det.plate}
+                  </span>
+                </div>
+                <div className="mt-2 grid grid-cols-2 gap-2 text-xs text-slate-500">
+                  <span>OCR: {det.confidence.toFixed(2)}%</span>
+                  <span>Time: {det.time.toFixed(0)}ms</span>
+                  <span>
+                    BBox: {det.bbox.x}, {det.bbox.y}
+                  </span>
+                  <span>
+                    Size: {det.bbox.width}x{det.bbox.height}
+                  </span>
+                </div>
               </div>
             ))}
             <button
               onClick={() => {
-                setResult(null);
+                setDetections([]);
+                setAnnotatedImage(null);
                 setSelectedFile(null);
                 setError(null);
               }}
@@ -765,214 +779,288 @@ function ImageScanModule() {
   );
 }
 
-// ─── VIDEO SCAN MODULE ────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ VIDEO SCAN MODULE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function VideoScanModule() {
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [videoPreviewUrl, setVideoPreviewUrl] = useState(null);
+  const [outputVideoUrl, setOutputVideoUrl] = useState(null);
   const [uploaded, setUploaded] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [done, setDone] = useState(false);
   const [progress, setProgress] = useState(0);
-  const [currentFrame, setCurrentFrame] = useState(0);
-  const totalFrames = 450;
   const [discoveredPlates, setDiscoveredPlates] = useState([]);
-  const [dragOver, setDragOver] = useState(false);
+  const [detectionEvents, setDetectionEvents] = useState([]);
+  const [error, setError] = useState(null);
+  const [totalFrames, setTotalFrames] = useState(0);
+  const [fps, setFps] = useState(30);
+  const outputVideoRef = useRef(null);
 
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setDragOver(false);
-    const files = e.dataTransfer.files;
-    if (files.length > 0) {
-      startProcessing();
+  // Cleanup preview URL when component unmounts or file changes
+  useEffect(() => {
+    return () => {
+      if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
+      if (outputVideoUrl) URL.revokeObjectURL(outputVideoUrl);
+    };
+  }, [videoPreviewUrl, outputVideoUrl]);
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
+      if (outputVideoUrl) URL.revokeObjectURL(outputVideoUrl);
+      setVideoPreviewUrl(URL.createObjectURL(file));
+      setOutputVideoUrl(null);
+      setUploaded(false);
+      setProcessing(false);
+      setDone(false);
+      setDiscoveredPlates([]);
+      setDetectionEvents([]);
+      setError(null);
+      setProgress(0);
+      setTotalFrames(0);
     }
   };
 
-  const startProcessing = async () => {
+  const fileToBase64 = (file) => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result.split(",")[1]);
+      reader.onerror = reject;
+    });
+  };
+
+  const handleUploadAndProcess = async () => {
+    if (!selectedFile) return;
+
     setUploaded(true);
     setProcessing(true);
+    setDone(false);
     setDiscoveredPlates([]);
+    setDetectionEvents([]);
+    setError(null);
     setProgress(0);
-    setCurrentFrame(0);
+    if (outputVideoUrl) {
+      URL.revokeObjectURL(outputVideoUrl);
+      setOutputVideoUrl(null);
+    }
 
-    // Simulate video processing
-    let frame = 0;
-    const iv = setInterval(() => {
-      frame += 6;
-      setCurrentFrame(Math.min(frame, totalFrames));
-      setProgress(Math.min(frame / totalFrames, 1));
+    try {
+      const base64 = await fileToBase64(selectedFile);
 
-      // Simulate plate detections
-      if (frame === 90)
-        setDiscoveredPlates((p) => [
-          ...p,
-          {
-            id: 1,
-            plate: "30K-123.45",
-            timestamp: "00:03",
-            frame: 90,
-            confidence: 97.2,
-          },
-        ]);
-      if (frame === 210)
-        setDiscoveredPlates((p) => [
-          ...p,
-          {
-            id: 2,
-            plate: "51F-456.78",
-            timestamp: "00:07",
-            frame: 210,
-            confidence: 94.1,
-          },
-        ]);
-      if (frame === 360)
-        setDiscoveredPlates((p) => [
-          ...p,
-          {
-            id: 3,
-            plate: "29A-789.01",
-            timestamp: "00:12",
-            frame: 360,
-            confidence: 88.5,
-          },
-        ]);
-      if (frame === 540)
-        setDiscoveredPlates((p) => [
-          ...p,
-          {
-            id: 4,
-            plate: "43B-654.32",
-            timestamp: "00:18",
-            frame: 540,
-            confidence: 92.7,
-          },
-        ]);
-      if (frame === 720)
-        setDiscoveredPlates((p) => [
-          ...p,
-          {
-            id: 5,
-            plate: "92H-321.00",
-            timestamp: "00:24",
-            frame: 720,
-            confidence: 85.3,
-          },
-        ]);
+      // Simulate progress while waiting for backend
+      let p = 0;
+      const progressInterval = setInterval(() => {
+        p += Math.random() * 6 + 2;
+        if (p >= 95) clearInterval(progressInterval);
+        setProgress(Math.min(p, 95));
+      }, 300);
 
-      if (frame >= totalFrames) {
-        clearInterval(iv);
-        setProcessing(false);
-        setDone(true);
+      const response = await fetch(`${API_BASE_URL}/scan-video-file`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          video_base64: base64,
+          filename: selectedFile.name,
+        }),
+      });
+
+      clearInterval(progressInterval);
+      setProgress(100);
+
+      if (!response.ok) {
+        const errText = await response.text();
+        throw new Error(errText || "Video processing failed");
       }
-    }, 100);
+
+      const metadataHeader = response.headers.get("X-Detections");
+      const metadata = metadataHeader ? JSON.parse(metadataHeader) : {};
+      const outputBlob = await response.blob();
+      const outputUrl = URL.createObjectURL(outputBlob);
+
+      setOutputVideoUrl(outputUrl);
+      setDiscoveredPlates(metadata.discovered_plates || []);
+      setDetectionEvents(metadata.detection_events || []);
+      setTotalFrames(metadata.total_frames || 0);
+      setFps(metadata.fps || 30);
+
+      const events = metadata.detection_events || [];
+      if (events.length > 0) {
+        console.group("Video detection timeline");
+        events.forEach((event, index) => {
+          console.log(
+            `[${index + 1}] ${event.timestamp} - ${event.plate || "Plate"} (${event.confidence}%) frame ${event.frame}`,
+            event.bbox,
+          );
+        });
+        console.groupEnd();
+      }
+    } catch (err) {
+      console.error("Video processing error:", err);
+      setError(err.message || "Failed to process video. Please try again.");
+    } finally {
+      setProcessing(false);
+      setDone(true);
+    }
+  };
+
+  const reset = () => {
+    if (videoPreviewUrl) URL.revokeObjectURL(videoPreviewUrl);
+    if (outputVideoUrl) URL.revokeObjectURL(outputVideoUrl);
+    setSelectedFile(null);
+    setVideoPreviewUrl(null);
+    setOutputVideoUrl(null);
+    setUploaded(false);
+    setProcessing(false);
+    setDone(false);
+    setDiscoveredPlates([]);
+    setDetectionEvents([]);
+    setError(null);
+    setProgress(0);
+    setTotalFrames(0);
+  };
+
+  const seekOutputVideo = (seconds) => {
+    if (!outputVideoRef.current || seconds == null) return;
+    outputVideoRef.current.currentTime = seconds;
+    outputVideoRef.current.play();
   };
 
   return (
     <div className="space-y-5">
-      {!uploaded ? (
+      {!selectedFile ? (
         <div
-          onDrop={handleDrop}
-          onDragOver={(e) => {
-            e.preventDefault();
-            setDragOver(true);
-          }}
-          onDragLeave={() => setDragOver(false)}
-          onClick={startProcessing}
-          className={`border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 backdrop-blur-sm
-            ${dragOver ? "border-purple-400 bg-purple-500/10" : "border-white/20 hover:border-purple-400/50 hover:bg-white/[0.03]"}`}
+          className="border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 backdrop-blur-sm border-white/20 hover:border-purple-400/50 hover:bg-white/[0.03]"
+          onClick={() => document.getElementById("video-input").click()}
         >
-          <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center mx-auto mb-4 hover:bg-purple-500/15 transition-colors">
+          <input
+            type="file"
+            accept="video/*"
+            onChange={handleFileChange}
+            className="hidden"
+            id="video-input"
+          />
+          <div className="w-14 h-14 rounded-2xl bg-purple-500/10 border border-purple-500/30 flex items-center justify-center mx-auto mb-4">
             <FileVideo size={24} className="text-purple-400" />
           </div>
-          <p className="text-slate-200 font-semibold mb-1">
-            Drop video file here
-          </p>
-          <p className="text-slate-500 text-sm">
-            or click to simulate processing · MP4, AVI, MOV
-          </p>
+          <p className="text-slate-200 font-semibold mb-1">Select video file</p>
+          <p className="text-slate-500 text-sm">MP4, AVI, MOV (max 200MB)</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <div className="lg:col-span-2 space-y-3">
-            <VideoScanCanvas
-              progress={progress}
-              currentFrame={Math.min(currentFrame, totalFrames)}
-              totalFrames={totalFrames}
-              isProcessing={processing}
-            />
-
-            <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4 space-y-2 backdrop-blur-sm">
-              <div className="flex items-center justify-between text-xs text-slate-400">
-                <span className="flex items-center gap-1.5">
-                  <Cpu size={12} className="text-purple-400" />
-                  {processing
-                    ? `Analyzing: Frame ${currentFrame} / ${totalFrames}`
-                    : "Analysis complete"}
-                </span>
-                <span className="font-mono text-purple-400">
-                  {Math.round(progress * 100)}%
-                </span>
-              </div>
-              <div className="h-2 bg-white/5 rounded-full overflow-hidden">
-                <div
-                  className="h-full bg-gradient-to-r from-purple-500 to-pink-400 rounded-full transition-all duration-200"
-                  style={{ width: `${progress * 100}%` }}
-                />
-              </div>
-              {done && (
-                <p className="text-xs text-emerald-400 flex items-center gap-1.5">
-                  <CheckCircle size={12} /> Processing complete —{" "}
-                  {discoveredPlates.length} plates found
-                </p>
-              )}
-            </div>
-          </div>
-
-          <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4 backdrop-blur-sm">
-            <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">
-              Discovered Plates{" "}
-              {discoveredPlates.length > 0 && (
-                <span className="text-purple-400 ml-1">
-                  ({discoveredPlates.length})
-                </span>
-              )}
-            </p>
-            <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
-              {discoveredPlates.length === 0 && (
-                <div className="text-center py-8">
-                  <div className="w-8 h-8 border-2 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-2" />
-                  <p className="text-xs text-slate-500">Scanning frames...</p>
+            {(outputVideoUrl || videoPreviewUrl) && (
+              <video
+                ref={outputVideoRef}
+                src={outputVideoUrl || videoPreviewUrl}
+                controls
+                className="w-full rounded-2xl border border-white/10 bg-black/40"
+                style={{ maxHeight: "320px" }}
+              />
+            )}
+            {outputVideoUrl && (
+              <a
+                href={outputVideoUrl}
+                download={`annotated_${selectedFile?.name || "video.mp4"}`}
+                className="inline-flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 text-xs transition"
+              >
+                <Download size={14} /> Download output video
+              </a>
+            )}
+            {!uploaded && !processing && (
+              <button
+                onClick={handleUploadAndProcess}
+                className="w-full py-2.5 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-medium flex items-center justify-center gap-2 hover:opacity-90 transition"
+              >
+                <Play size={16} /> Upload & Process Video
+              </button>
+            )}
+            {(processing || done) && (
+              <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4 space-y-2">
+                <div className="flex justify-between text-xs text-slate-400">
+                  <span>{processing ? "Processing..." : "Complete"}</span>
+                  <span>{Math.round(progress)}%</span>
                 </div>
-              )}
-              {discoveredPlates.map((p) => (
-                <div
-                  key={p.id}
-                  className="flex items-center gap-2 bg-white/[0.03] hover:bg-white/[0.06] rounded-lg p-2.5 cursor-pointer transition-all group"
-                >
-                  <div className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <PlateDisplay plate={p.plate} size="sm" />
-                    </div>
-                    <p className="text-xs text-slate-500 mt-0.5">
-                      @ {p.timestamp} · {p.confidence}%
-                    </p>
-                  </div>
-                  <ChevronRight
-                    size={12}
-                    className="text-slate-600 group-hover:text-slate-400"
+                <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-purple-500 to-pink-400 rounded-full transition-all duration-200"
+                    style={{ width: `${progress}%` }}
                   />
                 </div>
+                {done && !error && (
+                  <p className="text-xs text-emerald-400">
+                    Done. Found {discoveredPlates.length} unique plates across {detectionEvents.length} detections in {totalFrames} frames
+                  </p>
+                )}
+                {error && <p className="text-xs text-red-400">Ã¢Å¡Â  {error}</p>}
+              </div>
+            )}
+          </div>
+
+          <div className="bg-white/[0.02] border border-white/10 rounded-xl p-4">
+            <p className="text-xs font-semibold text-slate-400 mb-3">
+              Detection Log ({detectionEvents.length})
+            </p>
+            <div className="space-y-2 max-h-72 overflow-y-auto pr-1">
+              {detectionEvents.map((p, idx) => (
+                <div
+                  key={idx}
+                  onClick={() => seekOutputVideo(p.timestamp_seconds ?? p.frame / fps)}
+                  className="flex items-center gap-2 bg-white/[0.03] rounded-lg p-2 hover:bg-white/[0.06] transition cursor-pointer"
+                >
+                  <div className="flex-1 min-w-0">
+                    <PlateDisplay plate={p.plate || "Plate"} size="sm" />
+                    <p className="text-xs text-slate-500 mt-1">
+                      {p.timestamp || `frame ${p.frame}`} Â· {p.confidence}% Â· frame {p.frame}
+                    </p>
+                  </div>
+                  <div className="text-xs text-slate-500 ml-auto text-right">
+                    {p.bbox?.width}x{p.bbox?.height}
+                  </div>
+                </div>
               ))}
+              {!processing && done && detectionEvents.length === 0 && !error && (
+                <div className="text-center text-slate-500 text-sm py-6">
+                  No plates detected
+                </div>
+              )}
+              {processing && detectionEvents.length === 0 && (
+                <div className="text-center text-slate-500 text-sm py-6">
+                  Waiting for results...
+                </div>
+              )}
             </div>
+            {discoveredPlates.length > 0 && (
+              <div className="mt-4 pt-3 border-t border-white/10">
+                <p className="text-xs font-semibold text-slate-400 mb-2">
+                  Unique Plates ({discoveredPlates.length})
+                </p>
+                <div className="space-y-2">
+                  {discoveredPlates.map((p, idx) => (
+                    <div
+                      key={`${p.plate}-${idx}`}
+                      className="bg-white/[0.03] rounded-lg p-2 text-xs text-slate-400"
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <PlateDisplay plate={p.plate} size="sm" />
+                        <span>{p.confidence}%</span>
+                      </div>
+                      <p className="mt-1">
+                        {p.first_timestamp || p.timestamp} - {p.last_timestamp || p.timestamp} Â· {p.occurrences || 1} times
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {done && (
               <button
-                onClick={() => {
-                  setUploaded(false);
-                  setDone(false);
-                  setDiscoveredPlates([]);
-                }}
-                className="w-full mt-3 flex items-center justify-center gap-1.5 bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-purple-400 rounded-lg px-3 py-2 text-xs font-medium transition-all"
+                onClick={reset}
+                className="w-full mt-3 flex justify-center gap-1 text-purple-400 text-xs bg-purple-500/10 py-2 rounded-lg hover:bg-purple-500/20 transition"
               >
-                <RefreshCw size={12} /> Upload New Video
+                <RefreshCw size={12} /> New Video
               </button>
             )}
           </div>
@@ -982,7 +1070,7 @@ function VideoScanModule() {
   );
 }
 
-// ─── MEDIA SCAN PAGE ──────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ MEDIA SCAN PAGE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function MediaScanPage() {
   const [tab, setTab] = useState("image");
@@ -1019,38 +1107,189 @@ function MediaScanPage() {
   );
 }
 
-// ─── LIVE STREAM PAGE ─────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ LIVE STREAM PAGE Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function LiveStreamPage() {
-  const [isPlaying, setIsPlaying] = useState(true);
-  const [detections, setDetections] = useState([
-    { id: 1, plate: "30K-123.45", time: "10:48:23", confidence: 97.2 },
-    { id: 2, plate: "51F-789.01", time: "10:48:19", confidence: 91.5 },
-  ]);
-  const [count, setCount] = useState(2);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const streamRef = useRef(null);
+  const scanTimerRef = useRef(null);
+  const scanningRef = useRef(false);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [detections, setDetections] = useState([]);
+  const [currentBoxes, setCurrentBoxes] = useState([]);
+  const [error, setError] = useState(null);
+  const [latency, setLatency] = useState(0);
+  const [count, setCount] = useState(0);
+
+  const stopCamera = useCallback(() => {
+    if (scanTimerRef.current) {
+      clearInterval(scanTimerRef.current);
+      scanTimerRef.current = null;
+    }
+    if (streamRef.current) {
+      streamRef.current.getTracks().forEach((track) => track.stop());
+      streamRef.current = null;
+    }
+    if (videoRef.current) {
+      videoRef.current.srcObject = null;
+    }
+    setIsPlaying(false);
+    setCameraReady(false);
+    setCurrentBoxes([]);
+  }, []);
+
+  const drawOverlay = useCallback((boxes) => {
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    if (!canvas || !video || !video.videoWidth || !video.videoHeight) return;
+
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    boxes.forEach((det) => {
+      const { x, y, width, height } = det.bbox;
+      ctx.strokeStyle = "#22c55e";
+      ctx.lineWidth = 3;
+      ctx.strokeRect(x, y, width, height);
+
+      const label = `${det.plate || "Plate"} ${Number(det.confidence || 0).toFixed(1)}%`;
+      ctx.font = "18px monospace";
+      const labelWidth = Math.max(120, ctx.measureText(label).width + 14);
+      const labelY = Math.max(24, y - 8);
+      ctx.fillStyle = "rgba(34,197,94,0.95)";
+      ctx.fillRect(x, labelY - 22, labelWidth, 24);
+      ctx.fillStyle = "#020617";
+      ctx.fillText(label, x + 7, labelY - 5);
+    });
+  }, []);
+
+  const scanCurrentFrame = useCallback(async () => {
+    const video = videoRef.current;
+    if (!video || !cameraReady || scanningRef.current) return;
+    if (!video.videoWidth || !video.videoHeight) return;
+
+    scanningRef.current = true;
+    try {
+      const canvas = document.createElement("canvas");
+      const maxWidth = 960;
+      const scale = Math.min(1, maxWidth / video.videoWidth);
+      canvas.width = Math.round(video.videoWidth * scale);
+      canvas.height = Math.round(video.videoHeight * scale);
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      const imageBase64 = canvas.toDataURL("image/jpeg", 0.82).split(",")[1];
+
+      const response = await fetch(`${API_BASE_URL}/scan-live-frame`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          image_base64: imageBase64,
+          filename: "webcam-frame.jpg",
+        }),
+      });
+
+      if (!response.ok) {
+        const message = await response.text();
+        throw new Error(message || "Live frame scan failed");
+      }
+
+      const data = await response.json();
+      const scaleX = video.videoWidth / Math.max(1, data.frame_width || canvas.width);
+      const scaleY = video.videoHeight / Math.max(1, data.frame_height || canvas.height);
+      const boxes = (data.detections || []).map((det) => ({
+        ...det,
+        bbox: {
+          x: det.bbox.x * scaleX,
+          y: det.bbox.y * scaleY,
+          width: det.bbox.width * scaleX,
+          height: det.bbox.height * scaleY,
+        },
+      }));
+
+      setCurrentBoxes(boxes);
+      drawOverlay(boxes);
+      setLatency(data.processing_time_ms || 0);
+
+      const plateEvents = boxes
+        .filter((det) => det.plate)
+        .map((det) => {
+          const now = new Date();
+          const time = now.toLocaleTimeString("en-GB", { hour12: false });
+          return {
+            id: `${Date.now()}-${det.id}-${det.plate}`,
+            plate: det.plate,
+            time,
+            isoTime: data.timestamp,
+            confidence: Number(det.confidence || 0),
+            detectionConfidence: Number(det.detection_confidence || 0),
+            bbox: det.bbox,
+          };
+        });
+
+      if (plateEvents.length > 0) {
+        setCount((value) => value + plateEvents.length);
+        setDetections((prev) => [...plateEvents, ...prev].slice(0, 50));
+        console.table(plateEvents.map(({ plate, time, confidence }) => ({ plate, time, confidence })));
+      }
+    } catch (err) {
+      console.error("Live stream scan error:", err);
+      setError(err.message || "Could not scan webcam frame");
+    } finally {
+      scanningRef.current = false;
+    }
+  }, [cameraReady, drawOverlay]);
+
+  const startCamera = useCallback(async () => {
+    setError(null);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false,
+      });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        await videoRef.current.play();
+      }
+      setCameraReady(true);
+      setIsPlaying(true);
+    } catch (err) {
+      console.error("Could not start webcam:", err);
+      setError(err.message || "Could not access webcam");
+      stopCamera();
+    }
+  }, [stopCamera]);
 
   useEffect(() => {
-    if (!isPlaying) return;
-    const plates = [
-      "30K-123.45",
-      "51F-789.01",
-      "43A-321.65",
-      "29B-456.78",
-      "92H-543.21",
-    ];
-    const iv = setInterval(() => {
-      const plate = plates[Math.floor(Math.random() * plates.length)];
-      const conf = (80 + Math.random() * 18).toFixed(1);
-      const now = new Date();
-      const time = `${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}:${String(now.getSeconds()).padStart(2, "0")}`;
-      setCount((c) => c + 1);
-      setDetections((prev) => [
-        { id: Date.now(), plate, time, confidence: parseFloat(conf) },
-        ...prev.slice(0, 14),
-      ]);
-    }, 2200);
-    return () => clearInterval(iv);
-  }, [isPlaying]);
+    if (!isPlaying || !cameraReady) return;
+    scanTimerRef.current = setInterval(scanCurrentFrame, 3000);
+    return () => {
+      if (scanTimerRef.current) {
+        clearInterval(scanTimerRef.current);
+        scanTimerRef.current = null;
+      }
+    };
+  }, [isPlaying, cameraReady, scanCurrentFrame]);
+
+  useEffect(() => stopCamera, [stopCamera]);
+
+  const avgConfidence = detections.length
+    ? detections.reduce((sum, det) => sum + det.confidence, 0) / detections.length
+    : 0;
+
+  const exportLog = () => {
+    const blob = new Blob([JSON.stringify(detections, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `live-stream-log-${Date.now()}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <div className="space-y-6">
@@ -1058,50 +1297,68 @@ function LiveStreamPage() {
         <div>
           <h2 className="text-2xl font-bold text-white">Live Stream</h2>
           <p className="text-sm text-slate-400 mt-0.5">
-            Real-time CCTV monitoring with AI detection
+            Real-time webcam license plate recognition
           </p>
         </div>
-        <div className="flex items-center gap-2">
-          <div
-            className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-medium border backdrop-blur-sm ${
-              isPlaying
-                ? "bg-emerald-500/15 text-emerald-400 border-emerald-400/30"
-                : "bg-slate-500/15 text-slate-400 border-slate-400/30"
-            }`}
-          >
-            <div
-              className={`w-1.5 h-1.5 rounded-full ${isPlaying ? "bg-emerald-400 animate-pulse" : "bg-slate-400"}`}
-            />
-            {isPlaying ? "LIVE" : "PAUSED"}
-          </div>
+        <div
+          className={`flex items-center gap-1.5 text-xs px-3 py-1.5 rounded-full font-medium border backdrop-blur-sm ${
+            isPlaying
+              ? "bg-emerald-500/15 text-emerald-400 border-emerald-400/30"
+              : "bg-slate-500/15 text-slate-400 border-slate-400/30"
+          }`}
+        >
+          <div className={`w-1.5 h-1.5 rounded-full ${isPlaying ? "bg-emerald-400 animate-pulse" : "bg-slate-400"}`} />
+          {isPlaying ? "LIVE" : "OFFLINE"}
         </div>
       </div>
 
+      {error && (
+        <div className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 text-red-400 text-sm flex items-center gap-2">
+          <AlertTriangle size={16} /> {error}
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-3">
-          <LiveStreamCanvas isPlaying={isPlaying} />
-          <div className="flex gap-2">
+          <div className="relative bg-black rounded-2xl overflow-hidden border border-white/10" style={{ aspectRatio: "16/9" }}>
+            <video
+              ref={videoRef}
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-contain"
+            />
+            <canvas
+              ref={canvasRef}
+              className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+            />
+            {!cameraReady && (
+              <div className="absolute inset-0 flex items-center justify-center text-slate-500 text-sm">
+                Webcam is not active
+              </div>
+            )}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {!isPlaying ? (
+              <button
+                onClick={startCamera}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium bg-emerald-500/15 hover:bg-emerald-500/25 border border-emerald-400/30 text-emerald-400 transition-all backdrop-blur-sm"
+              >
+                <Play size={14} /> Start Webcam
+              </button>
+            ) : (
+              <button
+                onClick={stopCamera}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium bg-amber-500/15 hover:bg-amber-500/25 border border-amber-400/30 text-amber-400 transition-all backdrop-blur-sm"
+              >
+                <Pause size={14} /> Stop
+              </button>
+            )}
             <button
-              onClick={() => setIsPlaying((p) => !p)}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all border backdrop-blur-sm
-                ${
-                  isPlaying
-                    ? "bg-amber-500/15 hover:bg-amber-500/25 border-amber-400/30 text-amber-400"
-                    : "bg-emerald-500/15 hover:bg-emerald-500/25 border-emerald-400/30 text-emerald-400"
-                }`}
+              onClick={exportLog}
+              disabled={detections.length === 0}
+              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 transition-all backdrop-blur-sm disabled:opacity-40"
             >
-              {isPlaying ? (
-                <>
-                  <Pause size={14} /> Pause
-                </>
-              ) : (
-                <>
-                  <Play size={14} /> Resume
-                </>
-              )}
-            </button>
-            <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-300 transition-all backdrop-blur-sm">
-              <Download size={14} /> Export
+              <Download size={14} /> Export Log
             </button>
           </div>
         </div>
@@ -1111,36 +1368,31 @@ function LiveStreamPage() {
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Live Detections
             </p>
-            <span className="text-xs font-mono text-slate-500">
-              {count} total
-            </span>
+            <span className="text-xs font-mono text-slate-500">{count} total</span>
           </div>
-          <div className="space-y-2 max-h-[380px] overflow-y-auto pr-1">
+          <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
             {detections.map((d, i) => (
               <div
                 key={d.id}
                 className={`flex items-center gap-2.5 p-2.5 rounded-lg border transition-all ${
-                  i === 0
-                    ? "bg-emerald-500/10 border-emerald-400/30"
-                    : "bg-white/[0.02] border-white/5"
+                  i === 0 ? "bg-emerald-500/10 border-emerald-400/30" : "bg-white/[0.02] border-white/5"
                 }`}
               >
-                <div
-                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${i === 0 ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`}
-                />
+                <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${i === 0 ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
                 <div className="flex-1 min-w-0">
                   <PlateDisplay plate={d.plate} size="sm" />
-                  <p className="text-xs text-slate-500 mt-0.5 font-mono">
-                    {d.time}
-                  </p>
+                  <p className="text-xs text-slate-500 mt-0.5 font-mono">{d.time}</p>
                 </div>
-                <span
-                  className={`text-xs px-1.5 py-0.5 rounded border font-medium ${confidenceColor(d.confidence)}`}
-                >
-                  {d.confidence}%
+                <span className={`text-xs px-1.5 py-0.5 rounded border font-medium ${confidenceColor(d.confidence)}`}>
+                  {d.confidence.toFixed(1)}%
                 </span>
               </div>
             ))}
+            {detections.length === 0 && (
+              <div className="text-center text-slate-500 text-sm py-8">
+                No live detections yet
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -1150,11 +1402,11 @@ function LiveStreamPage() {
           { label: "Total Detected", value: count, icon: Car, color: "violet" },
           {
             label: "Avg Confidence",
-            value: "91.4%",
+            value: detections.length ? `${avgConfidence.toFixed(1)}%` : "--",
             icon: TrendingUp,
             color: "emerald",
           },
-          { label: "Latency", value: "45ms", icon: Zap, color: "sky" },
+          { label: "Latency", value: latency ? `${latency.toFixed(0)}ms` : "--", icon: Zap, color: "sky" },
         ].map(({ label, value, icon: Icon, color }) => (
           <div
             key={label}
@@ -1187,8 +1439,6 @@ function LiveStreamPage() {
     </div>
   );
 }
-
-// ─── SCAN HISTORY PAGE ────────────────────────────────────────────────────────
 
 function ScanHistoryPage({ onReportError }) {
   const [search, setSearch] = useState("");
@@ -1276,7 +1526,7 @@ function ScanHistoryPage({ onReportError }) {
           onChange={setConfFilter}
           options={[
             { value: "all", label: "All Confidence" },
-            { value: "high", label: "High (≥90%)" },
+            { value: "high", label: "High (Ã¢â€°Â¥90%)" },
             { value: "mid", label: "Mid (75-90%)" },
             { value: "low", label: "Low (<75%)" },
           ]}
@@ -1379,7 +1629,7 @@ function ScanHistoryPage({ onReportError }) {
         {totalPages > 1 && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-white/8">
             <p className="text-xs text-slate-500">
-              {filtered.length} records · Page {page} of {totalPages}
+              {filtered.length} records Ã‚Â· Page {page} of {totalPages}
             </p>
             <div className="flex gap-1">
               <button
@@ -1404,7 +1654,7 @@ function ScanHistoryPage({ onReportError }) {
   );
 }
 
-// ─── FEEDBACK MODAL ───────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ FEEDBACK MODAL Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 function FeedbackModal({ scan, onClose, onSubmit }) {
   const [corrected, setCorrected] = useState("");
@@ -1542,7 +1792,7 @@ function FeedbackModal({ scan, onClose, onSubmit }) {
   );
 }
 
-// ─── MAIN DASHBOARD ───────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ MAIN DASHBOARD Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 export default function LPRDashboard() {
   const [currentPage, setCurrentPage] = useState("media");
