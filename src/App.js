@@ -37,37 +37,7 @@ import {
   Loader,
 } from "lucide-react";
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ CONFIGURATION Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const API_BASE_URL = "http://localhost:8000/api";
-
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ MOCK DATA (fallback if API unavailable) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-
-const HISTORY_DATA = [
-  {
-    id: "SCN-001",
-    timestamp: "2025-06-15 08:23:14",
-    source: "Live Stream",
-    thumbnail: null,
-    plate: "30K-123.45",
-    plateType: "1-line",
-    confidence: 97.2,
-    status: "success",
-    vehicleColor: "#1a56db",
-    make: "Toyota Camry",
-  },
-  {
-    id: "SCN-002",
-    timestamp: "2025-06-15 08:45:02",
-    source: "Image Upload",
-    thumbnail: null,
-    plate: "51F-456.78",
-    plateType: "1-line",
-    confidence: 94.5,
-    status: "success",
-    vehicleColor: "#e3a008",
-    make: "Honda CR-V",
-  },
-];
 
 const confidenceColor = (score) => {
   if (score >= 90)
@@ -1487,24 +1457,64 @@ function LiveStreamPage() {
 function ScanHistoryPage({ onReportError }) {
   const [search, setSearch] = useState("");
   const [sourceFilter, setSourceFilter] = useState("all");
-  const [typeFilter, setTypeFilter] = useState("all");
   const [confFilter, setConfFilter] = useState("all");
   const [page, setPage] = useState(1);
-  const perPage = 5;
+  const [historyData, setHistoryData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const perPage = 10;
 
-  const filtered = HISTORY_DATA.filter((r) => {
-    const matchSearch =
-      !search ||
-      r.plate.toLowerCase().includes(search.toLowerCase()) ||
-      r.id.toLowerCase().includes(search.toLowerCase());
-    const matchSource = sourceFilter === "all" || r.source === sourceFilter;
-    const matchType = typeFilter === "all" || r.plateType === typeFilter;
-    const matchConf =
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setLoading(true);
+      try {
+        const params = new URLSearchParams({ limit: "5000", offset: "0" });
+
+        if (sourceFilter !== "all") {
+          params.append("source", sourceFilter);
+        }
+        if (search.trim()) {
+          params.append("search", search.trim());
+        }
+
+        const response = await fetch(`${API_BASE_URL}/scan-history?${params}`);
+        if (!response.ok) {
+          throw new Error("Could not load scan history");
+        }
+
+        const data = await response.json();
+        const records = Array.isArray(data.records) ? data.records : [];
+
+        setHistoryData(
+          records.map((record) => ({
+            id: record.id,
+            timestamp: record.timestamp
+              ? new Date(record.timestamp).toLocaleString()
+              : "",
+            source: record.source || "Unknown",
+            plate: record.plate || "N/A",
+            confidence: Number(record.confidence || 0),
+            status: record.status || "pending",
+            detections: record.detections || [],
+          })),
+        );
+      } catch (error) {
+        console.error("Error fetching history:", error);
+        setHistoryData([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [sourceFilter, search]);
+
+  const filtered = historyData.filter((r) => {
+    return (
       confFilter === "all" ||
       (confFilter === "high" && r.confidence >= 90) ||
       (confFilter === "mid" && r.confidence >= 75 && r.confidence < 90) ||
-      (confFilter === "low" && r.confidence < 75);
-    return matchSearch && matchSource && matchType && matchConf;
+      (confFilter === "low" && r.confidence < 75)
+    );
   });
 
   const paged = filtered.slice((page - 1) * perPage, page * perPage);
@@ -1513,7 +1523,10 @@ function ScanHistoryPage({ onReportError }) {
   const FilterSelect = ({ value, onChange, options }) => (
     <select
       value={value}
-      onChange={(e) => onChange(e.target.value)}
+      onChange={(e) => {
+        onChange(e.target.value);
+        setPage(1);
+      }}
       className="bg-white/[0.04] border border-white/10 text-slate-300 text-xs rounded-lg px-3 py-2 focus:outline-none focus:border-emerald-500/50 backdrop-blur-sm"
     >
       {options.map((o) => (
@@ -1529,7 +1542,7 @@ function ScanHistoryPage({ onReportError }) {
       <div>
         <h2 className="text-2xl font-bold text-white">Scan History</h2>
         <p className="text-sm text-slate-400 mt-0.5">
-          Complete log of all license plate detection events
+          Complete log of all license plate detection events from all sources
         </p>
       </div>
 
@@ -1541,7 +1554,10 @@ function ScanHistoryPage({ onReportError }) {
           />
           <input
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setPage(1);
+            }}
             placeholder="Search plate, ID..."
             className="w-full bg-white/[0.04] border border-white/10 text-slate-300 text-xs rounded-lg pl-8 pr-3 py-2 focus:outline-none focus:border-emerald-500/50 placeholder:text-slate-600 backdrop-blur-sm"
           />
@@ -1557,20 +1573,11 @@ function ScanHistoryPage({ onReportError }) {
           ]}
         />
         <FilterSelect
-          value={typeFilter}
-          onChange={setTypeFilter}
-          options={[
-            { value: "all", label: "All Types" },
-            { value: "1-line", label: "1-Line" },
-            { value: "2-line", label: "2-Line" },
-          ]}
-        />
-        <FilterSelect
           value={confFilter}
           onChange={setConfFilter}
           options={[
             { value: "all", label: "All Confidence" },
-            { value: "high", label: "High (Ã¢â€°Â¥90%)" },
+            { value: "high", label: "High (>=90%)" },
             { value: "mid", label: "Mid (75-90%)" },
             { value: "low", label: "Low (<75%)" },
           ]}
@@ -1579,101 +1586,114 @@ function ScanHistoryPage({ onReportError }) {
 
       <div className="bg-white/[0.02] border border-white/10 rounded-2xl overflow-hidden backdrop-blur-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-white/10">
-                {[
-                  "ID",
-                  "Timestamp",
-                  "Source",
-                  "Plate",
-                  "Type",
-                  "Confidence",
-                  "Status",
-                  "Actions",
-                ].map((h) => (
-                  <th
-                    key={h}
-                    className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {paged.map((row, i) => (
-                <tr
-                  key={row.id}
-                  className={`border-b border-white/5 hover:bg-white/[0.02] transition-colors ${i === paged.length - 1 ? "border-0" : ""}`}
-                >
-                  <td className="px-4 py-3 font-mono text-xs text-slate-400">
-                    {row.id}
-                  </td>
-                  <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">
-                    {row.timestamp}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full border ${
-                        row.source === "Live Stream"
-                          ? "text-emerald-400 bg-emerald-500/10 border-emerald-400/30"
-                          : row.source === "Video Upload"
-                            ? "text-purple-400 bg-purple-500/10 border-purple-400/30"
-                            : "text-sky-400 bg-sky-500/10 border-sky-400/30"
-                      }`}
+          {loading ? (
+            <div className="p-8 text-center text-slate-400">
+              <Loader size={24} className="inline animate-spin mr-2" />
+              Loading history...
+            </div>
+          ) : paged.length === 0 ? (
+            <div className="p-8 text-center text-slate-500 text-sm">
+              No scan history available
+            </div>
+          ) : (
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="border-b border-white/10">
+                  {[
+                    "ID",
+                    "Timestamp",
+                    "Source",
+                    "Plate",
+                    "Confidence",
+                    "Status",
+                    "Actions",
+                  ].map((h) => (
+                    <th
+                      key={h}
+                      className="text-left text-xs font-semibold text-slate-400 uppercase tracking-wider px-4 py-3"
                     >
-                      {row.source}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <PlateDisplay plate={row.plate} size="sm" />
-                  </td>
-                  <td className="px-4 py-3 text-xs text-slate-400">
-                    {row.plateType === "2-line" ? "2-Line" : "1-Line"}
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-2">
-                      <div
-                        className={`w-2 h-2 rounded-full ${confidenceDot(row.confidence)}`}
-                      />
-                      <span className="text-sm font-medium text-slate-300">
-                        {row.confidence}%
-                      </span>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <span
-                      className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusBadge(row.status)}`}
-                    >
-                      {row.status === "success" ? "Success" : "Pending"}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        className="p-1.5 rounded-lg hover:bg-white/10 text-slate-500 hover:text-slate-300 transition-all"
-                        title="View"
-                      >
-                        <Eye size={12} />
-                      </button>
-                      <button
-                        onClick={() => onReportError(row)}
-                        className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-400 text-xs transition-all"
-                      >
-                        <Flag size={10} /> Report
-                      </button>
-                    </div>
-                  </td>
+                      {h}
+                    </th>
+                  ))}
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {paged.map((row, i) => (
+                  <tr
+                    key={row.id}
+                    className={`border-b border-white/5 hover:bg-white/[0.02] transition-colors ${i === paged.length - 1 ? "border-0" : ""}`}
+                  >
+                    <td className="px-4 py-3 font-mono text-xs text-slate-400">
+                      {row.id}
+                    </td>
+                    <td className="px-4 py-3 text-xs text-slate-400 whitespace-nowrap">
+                      {row.timestamp}
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full border ${
+                          row.source === "Live Stream"
+                            ? "text-emerald-400 bg-emerald-500/10 border-emerald-400/30"
+                            : row.source === "Video Upload"
+                              ? "text-purple-400 bg-purple-500/10 border-purple-400/30"
+                              : "text-sky-400 bg-sky-500/10 border-sky-400/30"
+                        }`}
+                      >
+                        {row.source}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <PlateDisplay plate={row.plate} size="sm" />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <div
+                          className={`w-2 h-2 rounded-full ${confidenceDot(row.confidence)}`}
+                        />
+                        <span className="text-sm font-medium text-slate-300">
+                          {row.confidence.toFixed(1)}%
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className={`text-xs px-2 py-0.5 rounded-full font-medium ${statusBadge(row.status)}`}
+                      >
+                        {row.status === "success"
+                          ? "Success"
+                          : row.status === "no_plate_detected"
+                            ? "No Plate"
+                            : "Pending"}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          className="p-1.5 rounded-lg hover:bg-white/10 text-slate-500 hover:text-slate-300 transition-all"
+                          title="View"
+                        >
+                          <Eye size={12} />
+                        </button>
+                        {row.status === "success" && (
+                          <button
+                            onClick={() => onReportError(row)}
+                            className="flex items-center gap-1 px-2 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/20 text-amber-400 text-xs transition-all"
+                          >
+                            <Flag size={10} /> Report
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </div>
-        {totalPages > 1 && (
+        {totalPages > 1 && !loading && (
           <div className="flex items-center justify-between px-4 py-3 border-t border-white/8">
             <p className="text-xs text-slate-500">
-              {filtered.length} records Ã‚Â· Page {page} of {totalPages}
+              {filtered.length} records - Page {page} of {totalPages}
             </p>
             <div className="flex gap-1">
               <button

@@ -483,7 +483,7 @@ def get_unified_history(limit=100, offset=0, source=None, search_plate=None):
     """Retrieve unified scan history with optional filtering"""
     try:
         if not UNIFIED_HISTORY_PATH.exists():
-            return []
+            return [], 0
         
         with open(UNIFIED_HISTORY_PATH, "r", encoding="utf-8") as f:
             history = json.load(f)
@@ -1051,7 +1051,7 @@ async def scan_video_file(request: ScanVideoRequest, background_tasks: Backgroun
             plate=primary_plate,
             confidence=primary_confidence,
             timestamp=timestamp,
-            detections=discovered_plates
+            detections=discovered_plates if discovered_plates else detection_events
         )
 
         # Chuáº©n bá»‹ response: tráº£ vá» file video Ä‘Ã£ xá»­ lÃ½ kÃ¨m danh sÃ¡ch
@@ -1157,15 +1157,14 @@ async def scan_live_frame(request: ScanImageRequest):
             # Also save each detection to unified history
             for idx, detection in enumerate(detections):
                 live_scan_id = f"LIVE-{int(time.time() * 1000) % 1000000:06d}-{idx}"
-                if detection.get("plate"):
-                    save_to_unified_history(
-                        scan_id=live_scan_id,
-                        source="Live Stream",
-                        plate=detection.get("plate", ""),
-                        confidence=detection.get("confidence", 0.0),
-                        timestamp=timestamp,
-                        detections=[detection]
-                    )
+                save_to_unified_history(
+                    scan_id=live_scan_id,
+                    source="Live Stream",
+                    plate=detection.get("plate", ""),
+                    confidence=detection.get("confidence", 0.0),
+                    timestamp=timestamp,
+                    detections=[detection]
+                )
 
         return LiveFrameResponse(
             status="success",

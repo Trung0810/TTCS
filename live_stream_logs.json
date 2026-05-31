@@ -512,5 +512,62 @@
         "timestamp": "2026-05-31T21:09:35.209380"
       }
     ]
+  },
+  {
+    "timestamp": "2026-05-31T21:49:49.731591",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "99E122268",
+        "confidence": 99.34,
+        "detection_confidence": 68.68,
+        "bbox": {
+          "x": 464,
+          "y": 136,
+          "width": 248,
+          "height": 140
+        },
+        "timestamp": "2026-05-31T21:49:49.731591"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:50:03.084430",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "27B125888",
+        "confidence": 99.95,
+        "detection_confidence": 73.04,
+        "bbox": {
+          "x": 554,
+          "y": 203,
+          "width": 253,
+          "height": 131
+        },
+        "timestamp": "2026-05-31T21:50:03.084430"
+      }
+    ]
+  },
+  {
+    "timestamp": "2026-05-31T21:50:06.086441",
+    "source": "webcam-frame.jpg",
+    "detections": [
+      {
+        "id": 1,
+        "plate": "77A12581A1",
+        "confidence": 97.42,
+        "detection_confidence": 62.32,
+        "bbox": {
+          "x": 568,
+          "y": 203,
+          "width": 213,
+          "height": 145
+        },
+        "timestamp": "2026-05-31T21:50:06.086441"
+      }
+    ]
   }
 ]

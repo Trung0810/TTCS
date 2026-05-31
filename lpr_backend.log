@@ -548,3 +548,16 @@ RuntimeError: Error(s) in loading state_dict for CRNN:
 2026-05-31 21:20:20,557 - __main__ - INFO - âœ“ YOLO model loaded successfully
 2026-05-31 21:20:20,967 - __main__ - INFO - âœ“ CRNN model loaded successfully
 2026-05-31 21:20:40,173 - __main__ - INFO - Scan saved to unified history: IMG-240170 - Image Upload
+2026-05-31 21:47:28,817 - __main__ - INFO - Using device: cuda
+2026-05-31 21:47:30,341 - __main__ - INFO - âœ“ YOLO model loaded successfully
+2026-05-31 21:47:30,818 - __main__ - INFO - âœ“ CRNN model loaded successfully
+2026-05-31 21:48:05,686 - __main__ - INFO - Scan saved to unified history: IMG-885684 - Image Upload
+2026-05-31 21:49:50,092 - __main__ - INFO - [LIVE] 2026-05-31T21:49:49.731591: 99E122268 (99.3%)
+2026-05-31 21:49:50,099 - __main__ - INFO - Scan saved to unified history: LIVE-990095-0 - Live Stream
+2026-05-31 21:50:03,862 - __main__ - INFO - [LIVE] 2026-05-31T21:50:03.084430: 27B125888 (100.0%)
+2026-05-31 21:50:03,870 - __main__ - INFO - Scan saved to unified history: LIVE-003866-0 - Live Stream
+2026-05-31 21:50:06,302 - __main__ - INFO - [LIVE] 2026-05-31T21:50:06.086441: 77A12581A1 (97.4%)
+2026-05-31 21:50:06,307 - __main__ - INFO - Scan saved to unified history: LIVE-006305-0 - Live Stream
+2026-05-31 21:50:24,181 - __main__ - INFO - Feedback recorded: FB-0001
+2026-05-31 21:57:44,808 - __main__ - INFO - Scan saved to unified history: IMG-464806 - Image Upload
+2026-05-31 21:58:10,492 - __main__ - INFO - Scan saved to unified history: IMG-490488 - Image Upload

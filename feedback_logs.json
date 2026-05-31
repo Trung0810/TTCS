@@ -1,0 +1,13 @@
+[
+  {
+    "id": "FB-0001",
+    "scan_id": "LIVE-006305-0",
+    "system_detected": "77A12581A1",
+    "corrected_text": "77A112345",
+    "error_type": "Character Confusion",
+    "notes": "",
+    "confidence": 97.42,
+    "submitted_at": "2026-05-31T21:50:24.180219",
+    "status": "pending"
+  }
+]
