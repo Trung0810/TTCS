@@ -4,7 +4,7 @@
     License Plate Recognition with YOLO Detection + CRNN Recognition
 ================================================================================
 Author: AI Full-Stack Engineer
-Date: June 2025
+Date: June 2026
 Features:
   - Real-time image & video processing
   - YOLO v11 license plate detection

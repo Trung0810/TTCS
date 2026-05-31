@@ -69,8 +69,6 @@ const HISTORY_DATA = [
   },
 ];
 
-// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ HELPER FUNCTIONS Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
-
 const confidenceColor = (score) => {
   if (score >= 90)
     return "text-emerald-400 bg-emerald-500/10 border-emerald-400/30";
@@ -991,10 +989,13 @@ function VideoScanModule() {
                 </div>
                 {done && !error && (
                   <p className="text-xs text-emerald-400">
-                    Done. Found {discoveredPlates.length} unique plates across {detectionEvents.length} detections in {totalFrames} frames
+                    Done. Found {discoveredPlates.length} unique plates across{" "}
+                    {detectionEvents.length} detections in {totalFrames} frames
                   </p>
                 )}
-                {error && <p className="text-xs text-red-400">Ã¢Å¡Â  {error}</p>}
+                {error && (
+                  <p className="text-xs text-red-400">Ã¢Å¡Â  {error}</p>
+                )}
               </div>
             )}
           </div>
@@ -1007,13 +1008,16 @@ function VideoScanModule() {
               {detectionEvents.map((p, idx) => (
                 <div
                   key={idx}
-                  onClick={() => seekOutputVideo(p.timestamp_seconds ?? p.frame / fps)}
+                  onClick={() =>
+                    seekOutputVideo(p.timestamp_seconds ?? p.frame / fps)
+                  }
                   className="flex items-center gap-2 bg-white/[0.03] rounded-lg p-2 hover:bg-white/[0.06] transition cursor-pointer"
                 >
                   <div className="flex-1 min-w-0">
                     <PlateDisplay plate={p.plate || "Plate"} size="sm" />
                     <p className="text-xs text-slate-500 mt-1">
-                      {p.timestamp || `frame ${p.frame}`} Â· {p.confidence}% Â· frame {p.frame}
+                      {p.timestamp || `frame ${p.frame}`} Â· {p.confidence}% Â·
+                      frame {p.frame}
                     </p>
                   </div>
                   <div className="text-xs text-slate-500 ml-auto text-right">
@@ -1021,11 +1025,14 @@ function VideoScanModule() {
                   </div>
                 </div>
               ))}
-              {!processing && done && detectionEvents.length === 0 && !error && (
-                <div className="text-center text-slate-500 text-sm py-6">
-                  No plates detected
-                </div>
-              )}
+              {!processing &&
+                done &&
+                detectionEvents.length === 0 &&
+                !error && (
+                  <div className="text-center text-slate-500 text-sm py-6">
+                    No plates detected
+                  </div>
+                )}
               {processing && detectionEvents.length === 0 && (
                 <div className="text-center text-slate-500 text-sm py-6">
                   Waiting for results...
@@ -1048,7 +1055,9 @@ function VideoScanModule() {
                         <span>{p.confidence}%</span>
                       </div>
                       <p className="mt-1">
-                        {p.first_timestamp || p.timestamp} - {p.last_timestamp || p.timestamp} Â· {p.occurrences || 1} times
+                        {p.first_timestamp || p.timestamp} -{" "}
+                        {p.last_timestamp || p.timestamp} Â·{" "}
+                        {p.occurrences || 1} times
                       </p>
                     </div>
                   ))}
@@ -1198,8 +1207,10 @@ function LiveStreamPage() {
       }
 
       const data = await response.json();
-      const scaleX = video.videoWidth / Math.max(1, data.frame_width || canvas.width);
-      const scaleY = video.videoHeight / Math.max(1, data.frame_height || canvas.height);
+      const scaleX =
+        video.videoWidth / Math.max(1, data.frame_width || canvas.width);
+      const scaleY =
+        video.videoHeight / Math.max(1, data.frame_height || canvas.height);
       const boxes = (data.detections || []).map((det) => ({
         ...det,
         bbox: {
@@ -1233,7 +1244,13 @@ function LiveStreamPage() {
       if (plateEvents.length > 0) {
         setCount((value) => value + plateEvents.length);
         setDetections((prev) => [...plateEvents, ...prev].slice(0, 50));
-        console.table(plateEvents.map(({ plate, time, confidence }) => ({ plate, time, confidence })));
+        console.table(
+          plateEvents.map(({ plate, time, confidence }) => ({
+            plate,
+            time,
+            confidence,
+          })),
+        );
       }
     } catch (err) {
       console.error("Live stream scan error:", err);
@@ -1247,7 +1264,11 @@ function LiveStreamPage() {
     setError(null);
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: "environment", width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
         audio: false,
       });
       streamRef.current = stream;
@@ -1278,11 +1299,14 @@ function LiveStreamPage() {
   useEffect(() => stopCamera, [stopCamera]);
 
   const avgConfidence = detections.length
-    ? detections.reduce((sum, det) => sum + det.confidence, 0) / detections.length
+    ? detections.reduce((sum, det) => sum + det.confidence, 0) /
+      detections.length
     : 0;
 
   const exportLog = () => {
-    const blob = new Blob([JSON.stringify(detections, null, 2)], { type: "application/json" });
+    const blob = new Blob([JSON.stringify(detections, null, 2)], {
+      type: "application/json",
+    });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
@@ -1307,7 +1331,9 @@ function LiveStreamPage() {
               : "bg-slate-500/15 text-slate-400 border-slate-400/30"
           }`}
         >
-          <div className={`w-1.5 h-1.5 rounded-full ${isPlaying ? "bg-emerald-400 animate-pulse" : "bg-slate-400"}`} />
+          <div
+            className={`w-1.5 h-1.5 rounded-full ${isPlaying ? "bg-emerald-400 animate-pulse" : "bg-slate-400"}`}
+          />
           {isPlaying ? "LIVE" : "OFFLINE"}
         </div>
       </div>
@@ -1320,7 +1346,10 @@ function LiveStreamPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <div className="lg:col-span-2 space-y-3">
-          <div className="relative bg-black rounded-2xl overflow-hidden border border-white/10" style={{ aspectRatio: "16/9" }}>
+          <div
+            className="relative bg-black rounded-2xl overflow-hidden border border-white/10"
+            style={{ aspectRatio: "16/9" }}
+          >
             <video
               ref={videoRef}
               muted
@@ -1368,22 +1397,32 @@ function LiveStreamPage() {
             <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider">
               Live Detections
             </p>
-            <span className="text-xs font-mono text-slate-500">{count} total</span>
+            <span className="text-xs font-mono text-slate-500">
+              {count} total
+            </span>
           </div>
           <div className="space-y-2 max-h-[420px] overflow-y-auto pr-1">
             {detections.map((d, i) => (
               <div
                 key={d.id}
                 className={`flex items-center gap-2.5 p-2.5 rounded-lg border transition-all ${
-                  i === 0 ? "bg-emerald-500/10 border-emerald-400/30" : "bg-white/[0.02] border-white/5"
+                  i === 0
+                    ? "bg-emerald-500/10 border-emerald-400/30"
+                    : "bg-white/[0.02] border-white/5"
                 }`}
               >
-                <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${i === 0 ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`} />
+                <div
+                  className={`w-1.5 h-1.5 rounded-full flex-shrink-0 ${i === 0 ? "bg-emerald-400 animate-pulse" : "bg-slate-600"}`}
+                />
                 <div className="flex-1 min-w-0">
                   <PlateDisplay plate={d.plate} size="sm" />
-                  <p className="text-xs text-slate-500 mt-0.5 font-mono">{d.time}</p>
+                  <p className="text-xs text-slate-500 mt-0.5 font-mono">
+                    {d.time}
+                  </p>
                 </div>
-                <span className={`text-xs px-1.5 py-0.5 rounded border font-medium ${confidenceColor(d.confidence)}`}>
+                <span
+                  className={`text-xs px-1.5 py-0.5 rounded border font-medium ${confidenceColor(d.confidence)}`}
+                >
                   {d.confidence.toFixed(1)}%
                 </span>
               </div>
@@ -1406,7 +1445,12 @@ function LiveStreamPage() {
             icon: TrendingUp,
             color: "emerald",
           },
-          { label: "Latency", value: latency ? `${latency.toFixed(0)}ms` : "--", icon: Zap, color: "sky" },
+          {
+            label: "Latency",
+            value: latency ? `${latency.toFixed(0)}ms` : "--",
+            icon: Zap,
+            color: "sky",
+          },
         ].map(({ label, value, icon: Icon, color }) => (
           <div
             key={label}
